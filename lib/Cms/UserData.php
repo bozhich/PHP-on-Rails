@@ -3,8 +3,6 @@
 class Cms_UserData {
 	const ATTR_ALL = 1;
 	const ATTR_USER = 2;
-	const ATTR_MESSAGES = 3;
-	const ATTR_SETTINGS = 4;
 
 	const CACHE_INJECT_PREFIX = 'refresh_user_data_';
 	const CACHE_ACTIVITY_PREFIX = 'activity_user_data_'; // used to e stored in the cache
