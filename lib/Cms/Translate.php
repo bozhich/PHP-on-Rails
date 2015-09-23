@@ -4,9 +4,9 @@
  * Class Cms_Translate
  */
 class Cms_Translate {
-	const PROJECT = 'rofl';
+	const PROJECT = 'Cms_Translate_project_name';
 
-	const VERSION = 'rofl_com';
+	const VERSION = 'Cms_Translate_project_version';
 
 
 	/**
