@@ -1,0 +1,29 @@
+<?php
+
+class Api_BootstrapHelper extends Core_Bootstrap {
+	protected function loadCfg() {
+		$domain = $this->getRequest()->getServer('SERVER_NAME') ? $this->getRequest()->getServer('SERVER_NAME') : $this->getRequest()->getServer('HTTP_HOST');
+		cfg()->load($domain, Core_Cfg::MATCH_TYPE_DOMAIN);
+	}
+
+
+	protected function disableLayout() {
+		Core_View::getInstance()->disableLayout();
+	}
+
+
+	/**
+	 *
+	 */
+	protected function initDb() {
+		Core_Db::init(cfg()->db_data);
+	}
+
+	protected function initView() {
+		$this->view = Core_View::getInstance();
+		$this->view->addHelper(new Default_View_BaseHelper());
+		$this->view->addHelper(new Default_View_MessagesHelper());
+		$this->view->addHelper(new Default_View_PagingHelper());
+		$this->view->addHelper(new Default_View_NotificationsHelper());
+	}
+}

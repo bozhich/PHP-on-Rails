@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<?= $this->displayHeaderCode(); ?>
+	<title><?= __('title') ?></title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
+
+	<meta name="description" content="<?= __('META_DESCRIPTION') ?>"/>
+	<meta name="keywords" content="<?= __('META_KEYWORDS') ?>"/>
+	<?= Cms_Packer::css(md5('some key'), array()); ?>
+	<?= Cms_Packer::js(md5('some key2'), array()); ?>
+	<link rel="shortcut icon" href="<?= $this->getStaticAddress() ?>'img/favicon.ico"/>
+</head>
+
+<body class="<?= $this->getRequest()->getRoute('controller') ?> <?= $this->getRequest()->getRoute('action') ?>">
+<div id="main-page-wrapper" class="container">
+	<span><? $this->displayMain() ?></span>
+</div>
+</body>
+</html>
