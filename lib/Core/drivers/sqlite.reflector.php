@@ -1,0 +1,162 @@
+<?php
+
+/**
+ * This file is part of the "dibi" - smart database abstraction layer.
+ *
+ * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
+ *
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ */
+
+
+/**
+ * The dibi reflector for SQLite database.
+ *
+ * @author     David Grudl
+ * @package    dibi\drivers
+ * @internal
+ */
+class DibiSqliteReflector extends DibiObject implements IDibiReflector {
+	/** @var IDibiDriver */
+	private $driver;
+
+
+	public function __construct(IDibiDriver $driver) {
+		$this->driver = $driver;
+	}
+
+
+	/**
+	 * Returns list of tables.
+	 * @return array
+	 */
+	public function getTables() {
+		$res = $this->driver->query("
+			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view')
+			UNION ALL
+			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view')
+			ORDER BY name
+		");
+		$tables = array();
+		while ($row = $res->fetch(true)) {
+			$tables[] = $row;
+		}
+
+		return $tables;
+	}
+
+
+	/**
+	 * Returns metadata for all columns in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getColumns($table) {
+		$meta = $this->driver->query("
+			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '$table'
+			UNION ALL
+			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = '$table'"
+		)->fetch(true);
+
+		$res = $this->driver->query("PRAGMA table_info([$table])");
+		$columns = array();
+		while ($row = $res->fetch(true)) {
+			$column = $row['name'];
+			$pattern = "/(\"$column\"|\[$column\]|$column)\s+[^,]+\s+PRIMARY\s+KEY\s+AUTOINCREMENT/Ui";
+			$type = explode('(', $row['type']);
+			$columns[] = array(
+				'name'          => $column,
+				'table'         => $table,
+				'fullname'      => "$table.$column",
+				'nativetype'    => strtoupper($type[0]),
+				'size'          => isset($type[1]) ? (int) $type[1] : null,
+				'nullable'      => $row['notnull'] == '0',
+				'default'       => $row['dflt_value'],
+				'autoincrement' => (bool) preg_match($pattern, $meta['sql']),
+				'vendor'        => $row,
+			);
+		}
+
+		return $columns;
+	}
+
+
+	/**
+	 * Returns metadata for all indexes in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getIndexes($table) {
+		$res = $this->driver->query("PRAGMA index_list([$table])");
+		$indexes = array();
+		while ($row = $res->fetch(true)) {
+			$indexes[$row['name']]['name'] = $row['name'];
+			$indexes[$row['name']]['unique'] = (bool) $row['unique'];
+		}
+
+		foreach ($indexes as $index => $values) {
+			$res = $this->driver->query("PRAGMA index_info([$index])");
+			while ($row = $res->fetch(true)) {
+				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
+			}
+		}
+
+		$columns = $this->getColumns($table);
+		foreach ($indexes as $index => $values) {
+			$column = $indexes[$index]['columns'][0];
+			$primary = false;
+			foreach ($columns as $info) {
+				if ($column == $info['name']) {
+					$primary = $info['vendor']['pk'];
+					break;
+				}
+			}
+			$indexes[$index]['primary'] = (bool) $primary;
+		}
+		if (!$indexes) { // @see http://www.sqlite.org/lang_createtable.html#rowid
+			foreach ($columns as $column) {
+				if ($column['vendor']['pk']) {
+					$indexes[] = array(
+						'name'    => 'ROWID',
+						'unique'  => true,
+						'primary' => true,
+						'columns' => array($column['name']),
+					);
+					break;
+				}
+			}
+		}
+
+		return array_values($indexes);
+	}
+
+
+	/**
+	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getForeignKeys($table) {
+		if (!($this->driver instanceof DibiSqlite3Driver)) {
+			// throw new DibiNotSupportedException; // @see http://www.sqlite.org/foreignkeys.html
+		}
+		$res = $this->driver->query("PRAGMA foreign_key_list([$table])");
+		$keys = array();
+		while ($row = $res->fetch(true)) {
+			$keys[$row['id']]['name'] = $row['id']; // foreign key name
+			$keys[$row['id']]['local'][$row['seq']] = $row['from']; // local columns
+			$keys[$row['id']]['table'] = $row['table']; // referenced table
+			$keys[$row['id']]['foreign'][$row['seq']] = $row['to']; // referenced columns
+			$keys[$row['id']]['onDelete'] = $row['on_delete'];
+			$keys[$row['id']]['onUpdate'] = $row['on_update'];
+
+			if ($keys[$row['id']]['foreign'][0] == null) {
+				$keys[$row['id']]['foreign'] = null;
+			}
+		}
+
+		return array_values($keys);
+	}
+
+}
