@@ -127,4 +127,12 @@ class Core_Cfg extends Core_Singleton {
 	public function getPortalId() {
 		return $this->partner_id;
 	}
+
+	/**
+	 * @param $var
+	 * @return null
+	 */
+	public function __set($var, $value) {
+		$this->store[$var] = $value;
+	}
 }

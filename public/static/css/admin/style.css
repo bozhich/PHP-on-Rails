@@ -1,0 +1,12 @@
+.kwDialog {
+    z-index: 1050;
+    background: #fff;
+}
+
+.KWDialogInnerContainer {
+    background: #fff;
+}
+
+.cursorP {
+    cursor: pointer;
+}

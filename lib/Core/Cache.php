@@ -22,7 +22,10 @@ class Core_Cache {
 			$key = self::getVersionPrefix() . $key;
 		}
 
-		return self::getServer()->set($key, $var, $expire);
+		$status = self::getServer()->set($key, $var, $expire);
+		$result = self::getServer()->getResultCode();
+
+		return $status;
 	}
 
 
@@ -67,17 +70,19 @@ class Core_Cache {
 		return self::getServer()->getStats();
 	}
 
+
 	/**
 	 * @return Memcache
 	 */
 	protected static function getServer() {
 		if (self::$server === null) {
 			self::$server = new Memcached(self::getVersionPrefix());
-			$servers = self::$server->getServerList();
-			if (empty($servers) || !$servers) {
+
+			$server_test = self::$server->set('check_server', true, 100);
+			$server_status = self::$server->getResultCode();
+			if ($server_status === 20) {
 				self::$server->addServer(cfg()->memcache_host, cfg()->memcache_port);
 			}
-
 		}
 
 		return self::$server;

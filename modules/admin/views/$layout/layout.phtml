@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Bozhich.com Administration Panel</title>
+
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+
+	<?= Cms_Packer::css(md5('admin musaka'), array(
+		'bootstrap/bootstrap.css',
+		'admin/timeline.css',
+		'admin/sb-admin-2.css',
+		'admin/morris.css',
+		'page.css',
+		'admin/metisMenu.css',
+		'admin/font-awesome.css',
+		'admin/style.css',
+	));
+	?>
+	<link media="screen" rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.9/css/dataTables.bootstrap.min.css" />
+</head>
+<body>
+
+<div id="wrapper">
+	<div class="container-fluid">
+		<? if (count($this->getMessages()) > 0): ?>
+			<br/>
+			<? foreach ($this->getMessages() as $row): ?>
+				<div class="alert alert-<?= $row['type'] ?>">
+					<i class="icon-remove-sign"></i>
+					<?= $row['msg'] ?>
+				</div>
+			<? endforeach ?>
+		<? endif; ?>
+	</div>
+	<page></page>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<?= Cms_Packer::js(md5('admin musaka'), array(
+	'default/bootstrap/bootstrap.js',
+	'admin/metisMenu.js',
+	'admin/push.js',
+	'admin/page.js',
+	'admin/columnFilter.js',
+	'admin/raphael.js',
+	'admin/morris.js',
+	'admin/sb-admin-2.js',
+	'admin/perfect-scrollbar.jquery.min.js',
+	'admin/bootbox.js',
+	'rukiJs/ui.js',
+	'rukiJs/q.js',
+	'rukiJs/EventEmitter.js',
+	'rukiJs/polyfill.js',
+	'rukiJs/ViewComponent.js',
+	'rukiJs/EventListener.js',
+	'rukiJs/Button.js',
+	'rukiJs/Dialog.js',
+	'admin/components/Page.js',
+	'admin/components/Navigation.js',
+	'admin/components/Contents.js',
+	'admin/components/Users.js',
+	'admin/components/Roles.js',
+	'admin/components/Translate.js',
+	'admin/components/RemoteTranslate.js',
+	'admin/components/Teams.js',
+	'admin/components/Members.js',
+));
+//	'admin/morris-data.js',
+// Ruki JS
+// components
+?>
+<script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.9/js/dataTables.bootstrap.min.js"></script>
+<script>
+	ViewComponent.scan($('body')[0]);
+</script>
+</body>
+
+</html>

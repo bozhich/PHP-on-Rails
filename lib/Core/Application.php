@@ -61,7 +61,8 @@ class Core_Application extends Core_Singleton {
 		$module_components = array(
 			'controllers' => 'Controller',
 			'models'      => 'Model',
-			'helpers'     => 'Helper'
+			'helpers'     => 'Helper',
+			'files'       => 'File', // mainly used for migrations
 		);
 		foreach ($module_components as $component_directory => $component_id) {
 			// Ako zapochva s Core_ znachi niama da stoi v modulnite komponenti
@@ -140,15 +141,17 @@ class Core_Application extends Core_Singleton {
 
 
 	public static function p404($reason = null, $type = null) {
-		header('HTTP/1.0 404 Not Found');
-
 		$view = Core_View::getInstance();
+		if (!Core_Request::getInstance()->isAjax()) {
+			header('HTTP/1.0 404 Not Found');
+		}
+
 		if (is_file($view->getDirectory() . '$maintenance/404.phtml')) {
 			$view->reason = $reason;
 			$view->type = $type;
 			$view->backtrace = debug_backtrace();
 
-			$view->setLayoutFile('$maintenance/404.phtml');
+			$view->setMainFile('$maintenance/404.phtml');
 			$view->enableLayout();
 			$view->displayLayout();
 		} else {

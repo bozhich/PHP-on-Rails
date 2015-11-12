@@ -1,0 +1,62 @@
+<div id="page-wrapper">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header"><?= __('Users') ?></h1>
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<span><?= __('users:add') ?></span>
+
+					<div class="pull-right col-sm-1">
+						<UIButton action-action="load|users,index" caption="<?= __('users list') ?>"
+						          classnames="btn-success btn-xs"></UIButton>
+					</div>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="form-group">
+						<label><?= __('username') ?></label>
+						<input class="form-control" id="js-user">
+					</div>
+
+					<div class="form-group">
+						<label><?= __('email') ?></label>
+						<input type="email" class="form-control" id="js-email">
+					</div>
+
+					<div class="form-group">
+						<label><?= __('password') ?></label>
+						<input class="form-control" type="password" id="js-pass">
+					</div>
+
+					<div class="form-group">
+						<label><?= __('role') ?></label>
+						<select class="form-control" id="js-role">
+							<option value="0">--</option>
+							<? foreach ($this->all_roles as $role_row): ?>
+								<option value="<?= $role_row->id ?>"><?= $role_row->name ?></option>
+							<? endforeach ?>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label><?= __('company') ?></label>
+						<input class="form-control" id="js-company">
+					</div>
+
+					<UIButton action-action="addUser" caption="<?= __('add') ?>"
+					          classnames="btn-success btn-lg"></UIButton>
+				</div>
+				<!-- /.panel-body -->
+			</div>
+			<!-- /.panel -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+</div>

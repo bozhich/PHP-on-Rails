@@ -1,0 +1,10 @@
+<? if ($this->reason): ?>
+	<p class="reason"><?= $this->reason ?></p>
+<? endif ?>
+
+<? if (cfg()->dev_mode): ?>
+	<div style="background: rgba(0, 0, 0, 0.8); margin: 50px 5px; display: none;">
+		<pre><?= $this->reason ?></pre>
+		<pre><? var_dump($this->backtrace) ?></pre>
+	</div>
+<? endif ?>

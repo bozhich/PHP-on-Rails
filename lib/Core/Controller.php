@@ -32,4 +32,14 @@ abstract class Core_Controller {
 	public function getResponse() {
 		return Core_Response::getInstance();
 	}
+
+	/**
+	 * @return Core_Curl
+	 */
+	public function getApi() {
+		$curl = Core_Curl::getInstance();
+		$curl->setUrl(s()->version->current->url);
+
+		return $curl;
+	}
 }

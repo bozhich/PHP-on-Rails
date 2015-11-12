@@ -2,8 +2,9 @@
 
 class Core_Response extends Core_Singleton {
 
-	protected $status;
+	protected $status = 1;
 	protected $data;
+	protected $body;
 	protected $redirect;
 
 	/**
@@ -26,6 +27,23 @@ class Core_Response extends Core_Singleton {
 	/**
 	 * @return mixed
 	 */
+	public function getBody() {
+		return $this->body;
+	}
+
+	/**
+	 * @param mixed $body
+	 * @return Core_Response
+	 */
+	public function setBody($body) {
+		$this->body = $body;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
 	public function getStatus() {
 		return $this->status;
 	}
@@ -40,14 +58,13 @@ class Core_Response extends Core_Singleton {
 		return $this;
 	}
 
-	/**
-	 *
-	 */
 	public function toJson() {
 		$response = array(
 			'status' => $this->getStatus(),
-			'data'   => $this->getData()
+			'data'   => $this->getData(),
+			'body'   => $this->getBody(),
 		);
+
 		echo json_encode($response);
 		die;
 	}
@@ -64,10 +81,6 @@ class Core_Response extends Core_Singleton {
 		die;
 	}
 
-	/**
-	 * @param bool $error_type
-	 * @return $this
-	 */
 	public function setError($error_type = true) {
 		$this->setStatus(0);
 		$data = array(
@@ -78,10 +91,6 @@ class Core_Response extends Core_Singleton {
 		return $this;
 	}
 
-	/**
-	 * @param $error_text
-	 * @return $this
-	 */
 	public function setErrorText($error_text) {
 		$this->setStatus(0);
 		$data = $this->getData();

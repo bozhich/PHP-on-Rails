@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Defaulttenance</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<link rel="Shortcut Icon" type="image/ico" href="<?= cfg()->static_address ?>img/icons/global/site_icon.ico"/>
+</head>
+<body class="maintenance">
+<div class="pageWrapper">
+	<div class="timer" id="js-layout-time"><?= date('H:i:s') ?></div>
+	<div class="message">
+		<h3><?= __('maintence title') ?></h3>
+		<? if (cfg()->maintenance !== true): ?>
+			<? if (strtotime(cfg()->maintenance) > 0): ?>
+				<p><?= __('maintence time message: <span class="important"> %1$s </span>', cfg()->maintenance) ?></p>
+			<? else: ?>
+				<p><?= __('maintence text message: <span class="important"> %1$s </span>', cfg()->maintenance) ?></p>
+			<? endif ?>
+		<? endif ?>
+	</div>
+</div>
+</body>
+</html>
+
+<!-- <?= cfg()->getId() ?> / <?= cfg()->getPortalId() ?> -->
+

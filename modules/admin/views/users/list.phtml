@@ -1,0 +1,42 @@
+<div class="table-responsive">
+	<table class="table table-striped table-bordered"  id="js-usersList">
+		<thead>
+		<tr>
+			<th>#</th>
+			<th><?= __('username') ?></th>
+			<th><?= __('email') ?></th>
+			<th><?= __('role') ?></th>
+			<th><?= __('last active') ?></th>
+			<th><?= __('company') ?></th>
+			<th><?= __('actions') ?></th>
+		</tr>
+		</thead>
+		<tbody>
+		<? foreach ($this->all as $row): ?>
+			<tr>
+				<td><?= $row->id ?></td>
+				<td contenteditable="true" id="js-user-<?= $row->id ?>"><?= $row->user ?></td>
+				<td contenteditable="true" id="js-email-<?= $row->id ?>"><?= $row->email ?></td>
+				<td>
+					<select class="form-control" id="js-role-<?= $row->id ?>">
+						<? foreach ($this->all_roles as $role_row): ?>
+							<option value="<?= $role_row->id ?>" <?= ($role_row->id == $row->role_id) ? 'selected' : '' ?>><?= $role_row->name ?></option>
+						<?endforeach?>
+					</select>
+				<td><?= $row->last_active ?></td>
+				<td contenteditable="true" id="js-company-<?= $row->id ?>"><?= $row->company ?></td>
+				<td>
+					<EventListener action-click="save|<?= $row->id ?>">
+						<a data-toggle="tooltip" data-placement="top" title="<?= __('save user') ?>"
+						   href="javascript:void(0)"><i class="fa fa-check fa-fw"></i></a>
+					</EventListener>
+					<EventListener action-click="delete|<?= $row->id ?>">
+						<a data-toggle="tooltip" data-placement="top" title="<?= __('delete user') ?>"
+						   href="javascript:void(0)"><i class="fa fa-trash-o fa-fw"></i></a>
+					</EventListener>
+				</td>
+			</tr>
+		<? endforeach ?>
+		</tbody>
+	</table>
+</div>

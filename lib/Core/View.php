@@ -4,7 +4,7 @@
  * Class Core_View
  */
 class Core_View extends Core_Singleton {
-	protected $layou_file = null;
+	protected $layout_file = null;
 
 	protected $file_directory = null;
 
@@ -45,6 +45,7 @@ class Core_View extends Core_Singleton {
 			$main_file = $this->request->getRoute('controller');
 			$main_file .= DS . $this->request->getRoute('action') . '.phtml';
 
+
 			$this->setMainFile($main_file);
 		}
 	}
@@ -60,10 +61,10 @@ class Core_View extends Core_Singleton {
 	////
 
 	/**
-	 * @param $layou_file
+	 * @param $layout_file
 	 */
-	public function setLayoutFile($layou_file) {
-		$this->layou_file = $layou_file;
+	public function setLayoutFile($layout_file) {
+		$this->layout_file = $layout_file;
 	}
 
 
@@ -72,12 +73,13 @@ class Core_View extends Core_Singleton {
 	 */
 	public function displayLayout() {
 		if ($this->ajaxPage) {
-			$this->layou_file = '$layout/empty.phtml';
+			$this->layout_file = '$layout/empty.phtml';
 		}
+
 		if (!$this->disable_layout_file) {
 			$this->initPaths();
 
-			print $this->fetch($this->layou_file);
+			print $this->fetch($this->layout_file);
 			die;
 		}
 	}
@@ -136,6 +138,7 @@ class Core_View extends Core_Singleton {
 		print $this->main_code;
 
 		if (!$this->disable_main_file) {
+
 			$this->_include($this->main_file);
 		}
 	}
@@ -162,9 +165,12 @@ class Core_View extends Core_Singleton {
 	 * @param $file
 	 * @return string
 	 */
-	public function fetch($file) {
+	public function fetch($file = null) {
+		if (is_null($this->file_directory)) {
+			$this->initPaths();
+		}
 		if (!$file) {
-			$file = $this->file;
+			$file = $this->main_file;
 		}
 
 		// Start observing and get template
@@ -173,22 +179,24 @@ class Core_View extends Core_Singleton {
 		$contents = ob_get_contents();
 		ob_end_clean();
 
-//		list($head, $body) = explode('<body', $contents);
-//		$body = '<body ' . $body;
-//
-//		// work on the head
-//		$head = preg_replace('[\r\n|\n]', '', $head);
-//		$head = preg_replace('[  ]', '', $head);
-//
-//		// leave the <scripts> alone
-//		list($body, $footer) = explode('<script', $body);
-//		$footer = '<script ' . $footer;
-//
-//		// work on the head
-//		$body = preg_replace('[\r\n|\n]', '', $body);
-//		$body = preg_replace('[  ]', '', $body);
-//
-//		$contents = $head . $body . $footer;
+		if (cfg()->dev_mode) {
+			return $contents;
+		}
+
+		@list($head, $body) = explode('<body', $contents);
+		$body = '<body ' . $body;
+
+		// work on the head
+		$head = preg_replace('[\r\n|\n]', '', $head);
+		$head = preg_replace('[  ]', '', $head);
+		$head = preg_replace('#	#', '', $head);
+
+		$body = preg_replace('#<!--(\s+|.+)-->#', '', $body);
+		$body = preg_replace('#	#', '', $body);
+		$body = preg_replace('#(\s+)#', ' ', $body);
+
+		$contents = $head . $body;
+
 		return $contents;
 	}
 
@@ -258,6 +266,7 @@ class Core_View extends Core_Singleton {
 	protected function displayHeaderCode() {
 		print $this->header_code;
 	}
+
 }
 
 

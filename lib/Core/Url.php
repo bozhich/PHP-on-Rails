@@ -110,12 +110,12 @@ class Core_Url extends Core_Singleton {
 			$address = $this->getAddress($address, $options);
 		}
 		if ($this->request->isAjax()) {
-			echo '<script>window.location.href = "/index.php";</script>';
-			die;
+			//json
+			return Core_Response::getInstance()->redirect($address)->toJson();
 		}
 
 
-		header('Location: ' . $address, true, $code);
+			header('Location: ' . $address, true, $code);
 		die();
 	}
 }

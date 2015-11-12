@@ -93,5 +93,18 @@ abstract class Core_Model extends Core_Db {
 	public static function getCount($where = array()) {
 		return dibi::select('count(*)')->as('cnt')->from(static::$table)->where($where)->fetch();
 	}
+
+	/**
+	 * @param $data
+	 * @return $this|DibiResult|FALSE|IDibiResultDriver|int|NULL
+	 */
+	public static function tryAdd($data) {
+		try {
+			return dibi::insert(static::$table, $data)->execute();
+		} catch (DibiDriverException $e) {
+			//return $e->getMessage();
+			false;
+		}
+	}
 }
 

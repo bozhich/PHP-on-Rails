@@ -1,0 +1,31 @@
+<div class="table-responsive">
+	<table class="table table-striped table-bordered"  id="js-translateList">
+		<thead>
+		<tr>
+			<th>#</th>
+			<th><?= __('tag') ?></th>
+			<th><?= __('value') ?></th>
+<!--			<th>--><?//= __('language') ?><!--</th>-->
+			<th><?= __('timestamp') ?></th>
+			<th><?= __('actions') ?></th>
+		</tr>
+		</thead>
+		<tbody>
+		<? foreach ($this->all as $row): ?>
+			<tr>
+				<td><?= $row->id ?></td>
+				<td><?= $row->tag ?></td>
+				<td contenteditable="true" id="js-value-<?= $row->id ?>"><?= $row->value ?></td>
+<!--				<td>--><?//= $row->language_code ?><!--</td>-->
+				<td><?= $row->timestamp ?></td>
+				<td>
+					<EventListener action-click="save|<?= $row->id ?>">
+						<a data-toggle="tooltip" data-placement="top" title="<?= __('save') ?>"
+						   href="javascript:void(0)"><i class="fa fa-check fa-fw"></i></a>
+					</EventListener>
+				</td>
+			</tr>
+		<? endforeach ?>
+		</tbody>
+	</table>
+</div>

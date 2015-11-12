@@ -1,0 +1,37 @@
+<div class="container">
+	<div class="container-fluid">
+		<? if (count($this->getMessages()) > 0): ?>
+			<br/>
+			<? foreach ($this->getMessages() as $row): ?>
+				<div class="alert alert-<?= $row['type'] ?>">
+					<i class="icon-remove-sign"></i>
+					<?= $row['msg'] ?>
+				</div>
+			<? endforeach ?>
+		<? endif; ?>
+	</div>
+	<div class="row">
+		<div class="col-md-4 col-md-offset-4">
+			<div class="login-panel panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><?= __('Please Sign In') ?></h3>
+				</div>
+				<div class="panel-body">
+					<fieldset>
+						<div class="form-group">
+							<input class="form-control" placeholder="<?= __('login username') ?>" name="user"
+							       id="js-user" type="text" autofocus>
+						</div>
+						<div class="form-group">
+							<input class="form-control" placeholder="<?= __('login password') ?>" name="password"
+							       type="password" id="js-pass"
+							       value="">
+						</div>
+						<UIButton action-action="login" caption="<?= __('login') ?>"
+						        classnames="btn-success btn-lg"></UIButton>
+					</fieldset>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

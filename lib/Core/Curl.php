@@ -4,7 +4,9 @@
  * Class Core_Curl
  */
 class Core_Curl extends Core_Singleton {
-	const USER_AGENT = 'PHP-Curl-Class/1.0 (+https://github.com/php-curl-class/php-curl-class)';
+	const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:37.0) Gecko/20100101 Firefox/37.0';
+	const API_MODULE_NAME = 'api';
+	private $_url;
 
 	private $_cookies = array();
 	private $_headers = array();
@@ -51,53 +53,60 @@ class Core_Curl extends Core_Singleton {
 		$this->setOpt(CURLOPT_RETURNTRANSFER, true);
 	}
 
+
+	/**
+	 * @return mixed
+	 */
+	public function getUrl() {
+		return $this->_url;
+	}
+
+	/**
+	 * @param mixed $url
+	 */
+	public function setUrl($url) {
+		$this->_url = $url;
+	}
+
 	/**
 	 * @param       $url_mixed
 	 * @param array $data
 	 * @return int|mixed
 	 * @throws ErrorException
 	 */
-	public function get($url_mixed, $data = array()) {
-		if (is_array($url_mixed)) {
-			$curl_multi = curl_multi_init();
-			$this->_multi_parent = true;
+	public function get($data = array()) {
+		$this->setopt(CURLOPT_URL, $this->_buildURL($this->getUrl(), $data));
+		$this->setopt(CURLOPT_HTTPGET, true);
 
-			$this->curls = array();
+		return $this->exec();
+	}
 
-			foreach ($url_mixed as $url) {
-				$curl = new Curl();
-				$curl->_multi_child = true;
-				$curl->setOpt(CURLOPT_URL, $this->_buildURL($url, $data), $curl->curl);
-				$curl->setOpt(CURLOPT_HTTPGET, true);
-				$this->_call($this->_before_send, $curl);
-				$this->curls[] = $curl;
 
-				$curlm_error_code = curl_multi_add_handle($curl_multi, $curl->curl);
-				if (!($curlm_error_code === CURLM_OK)) {
-					throw new \ErrorException('cURL multi add handle error: ' .
-						curl_multi_strerror($curlm_error_code));
-				}
-			}
+	/**
+	 * @param       $url_mixed
+	 * @param array $data
+	 * @return int|mixed
+	 * @throws ErrorException
+	 */
+	public function send($data = array(), $params = array()) {
+		@list($controller, $action, $id) = $data;
 
-			foreach ($this->curls as $ch) {
-				foreach ($this->_options as $key => $value) {
-					$ch->setOpt($key, $value);
-				}
-			}
-
-			do {
-				$status = curl_multi_exec($curl_multi, $active);
-			} while ($status === CURLM_CALL_MULTI_PERFORM || $active);
-
-			foreach ($this->curls as $ch) {
-				$this->exec($ch);
-			}
+		$url = $this->getUrl() . '/' . self::API_MODULE_NAME . '/' . $controller . '/' . $action . '/' . $id;
+		bd($url);
+		$this->setopt(CURLOPT_URL, $url);
+		if (!empty($params)) {
+			bd($params);
+			$this->setOpt(CURLOPT_POSTFIELDS, $this->_postfields($params));
+			$this->setHeader('Expect:', '');
 		} else {
-			$this->setopt(CURLOPT_URL, $this->_buildURL($url_mixed, $data));
 			$this->setopt(CURLOPT_HTTPGET, true);
-
-			return $this->exec();
 		}
+		$result_code = $this->exec();
+		if ($result_code != 0) {
+			return $result_code;
+		}
+
+		return $this->response;
 	}
 
 	/**
@@ -105,9 +114,9 @@ class Core_Curl extends Core_Singleton {
 	 * @param array $data
 	 * @return int|mixed
 	 */
-	public function post($url, $data = array()) {
-		$this->setOpt(CURLOPT_URL, $this->_buildURL($url));
-		$this->setOpt(CURLOPT_POST, true);
+	public function post($data = array()) {
+		die('not ready for usage');
+		$this->setOpt(CURLOPT_URL, $this->_buildURL($this->getUrl()));
 		$this->setOpt(CURLOPT_POSTFIELDS, $this->_postfields($data));
 
 		return $this->exec();
@@ -119,6 +128,7 @@ class Core_Curl extends Core_Singleton {
 	 * @return int|mixed
 	 */
 	public function put($url, $data = array()) {
+		die('not ready for usage');
 		$this->setOpt(CURLOPT_URL, $url);
 		$this->setOpt(CURLOPT_CUSTOMREQUEST, 'PUT');
 		$this->setOpt(CURLOPT_POSTFIELDS, http_build_query($data));
@@ -132,6 +142,7 @@ class Core_Curl extends Core_Singleton {
 	 * @return int|mixed
 	 */
 	public function patch($url, $data = array()) {
+		die('not ready for usage');
 		$this->setOpt(CURLOPT_URL, $this->_buildURL($url));
 		$this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
 		$this->setOpt(CURLOPT_POSTFIELDS, $data);
@@ -145,6 +156,7 @@ class Core_Curl extends Core_Singleton {
 	 * @return int|mixed
 	 */
 	public function delete($url, $data = array()) {
+		die('not ready for usage');
 		$this->setOpt(CURLOPT_URL, $this->_buildURL($url, $data));
 		$this->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
 
@@ -314,7 +326,7 @@ class Core_Curl extends Core_Singleton {
 
 	/**
 	 * @param null $_ch
-	 * @return int|mixed
+	 * @return int|m ixed
 	 */
 	protected function exec($_ch = null) {
 		$ch = is_null($_ch) ? $this : $_ch;
@@ -324,7 +336,6 @@ class Core_Curl extends Core_Singleton {
 		} else {
 			$ch->response = curl_exec($ch->curl);
 		}
-
 		$ch->curl_error_code = curl_errno($ch->curl);
 		$ch->curl_error_message = curl_error($ch->curl);
 		$ch->curl_error = !($ch->curl_error_code === 0);
@@ -333,8 +344,10 @@ class Core_Curl extends Core_Singleton {
 		$ch->error = $ch->curl_error || $ch->http_error;
 		$ch->error_code = $ch->error ? ($ch->curl_error ? $ch->curl_error_code : $ch->http_status_code) : 0;
 
+
 		$ch->request_headers = preg_split('/\r\n/', curl_getinfo($ch->curl, CURLINFO_HEADER_OUT), null, PREG_SPLIT_NO_EMPTY);
 		$ch->response_headers = '';
+		$this->response = $ch->response;
 		if (!(strpos($ch->response, "\r\n\r\n") === false)) {
 			list($response_header, $ch->response) = explode("\r\n\r\n", $ch->response, 2);
 			if ($response_header === 'HTTP/1.1 100 Continue') {
@@ -351,7 +364,6 @@ class Core_Curl extends Core_Singleton {
 		} else {
 			$ch->_call($this->_error, $ch);
 		}
-
 		$ch->_call($this->_complete, $ch);
 
 		return $ch->error_code;

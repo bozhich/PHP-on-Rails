@@ -25,7 +25,9 @@ function rr($address = null) {
 	}
 }
 
-// Session
+/**
+ * @return Core_Session
+ */
 function s() {
 	return Core_Session::getInstance();
 }
