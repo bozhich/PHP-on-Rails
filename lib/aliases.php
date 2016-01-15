@@ -43,7 +43,9 @@ function p404($reason = null, $type = null) {
 	Core_Application::p404($reason, $type);
 }
 
-// Cfg
+/**
+ * @return Core_Cfg
+ */
 function cfg() {
 	return Core_Cfg::getInstance();
 }
@@ -78,5 +80,11 @@ function bd() {
 			}
 		}
 		Tracy\Debugger::barDump($var, $title);
+	}
+}
+
+if (!function_exists('boolval')) {
+	function boolval($val) {
+		return (bool) $val;
 	}
 }

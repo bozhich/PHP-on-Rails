@@ -6,15 +6,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
 	<title><?= __('maintence title') ?></title>
-	<?= Cms_Packer::css(md5('xxx'), array());
-	?>
-
 </head>
 
-<body class="nifty-ready mar-no pace-done">
+<body class="nifty-ready mar-no pace-done" style="margin: 0; padding: 0;">
 <div id="container" class="cls-container">
 	<div class="cls-content">
-		<h1 class="error-code text-warning"><?= __('maintence title') ?></h1>
+		<img src="<?= cfg()->static_address . 'img/coming_soon.png' ?>" style="width: 100%" />
+<!--		<h1 class="error-code text-warning">--><?//= __('maintence title') ?><!--</h1>-->
 	</div>
 </body>
 </html>

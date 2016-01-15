@@ -1,0 +1,16 @@
+{
+  "name": "bozhich/php-on-rails",
+  "description": "php-on-rails-framework",
+  "minimum-stability": "dev",
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Luka Bozhich",
+      "email": "luka@bozhich.com"
+    }
+  ],
+  "require": {
+    "dibi/dibi": "^3.0",
+    "tracy/tracy": "^2.3"
+  }
+}

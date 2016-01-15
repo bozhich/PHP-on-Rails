@@ -95,16 +95,17 @@ abstract class Core_Model extends Core_Db {
 	}
 
 	/**
-	 * @param $data
-	 * @return $this|DibiResult|FALSE|IDibiResultDriver|int|NULL
+	 * @param string $key
+	 * @param array  $where
+	 * @return array|DibiRow|null
 	 */
-	public static function tryAdd($data) {
-		try {
-			return dibi::insert(static::$table, $data)->execute();
-		} catch (DibiDriverException $e) {
-			//return $e->getMessage();
-			false;
-		}
+	public static function fetchAssoc($key = 'id', $where = array()) {
+		return Core_Db::select('*')->from(static::$table)->where($where)->fetchAssoc($key);
+	}
+
+
+	public static function getCacheName() {
+		return static::$table;
 	}
 }
 

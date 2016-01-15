@@ -80,14 +80,14 @@ class Core_Application extends Core_Singleton {
 		}
 
 		// dibi and tracy loading shits...
-		if (strstr($class_name, 'dibi')) {
-			$file = LIB_PATH . 'Core' . DS . $class_name . '.php';
-		} else if (strstr($class_name, 'Dibi\\Bridges\\Tracy\\')) {
-			$file_name = str_replace('Dibi\\Bridges', 'bridges', $class_name);
-			$file = LIB_PATH . 'Core' . DS . str_replace('\\', DS, $file_name) . '.php';
-		} else if (strstr($class_name, 'Tracy')) {
-			$file = LIB_PATH . 'Core' . DS . 'bridges' . DS . str_replace('\\', DS, $class_name) . '.php';
-		}
+//		if (strstr($class_name, 'dibi')) {
+//			$file = LIB_PATH . 'Core' . DS . $class_name . '.php';
+//		} else if (strstr($class_name, 'Dibi\\Bridges\\Tracy\\')) {
+//			$file_name = str_replace('Dibi\\Bridges', 'bridges', $class_name);
+//			$file = LIB_PATH . 'Core' . DS . str_replace('\\', DS, $file_name) . '.php';
+//		} else if (strstr($class_name, 'Tracy')) {
+//			$file = LIB_PATH . 'Core' . DS . 'bridges' . DS . str_replace('\\', DS, $class_name) . '.php';
+//		}
 
 
 		if (empty($file)) {
@@ -141,17 +141,15 @@ class Core_Application extends Core_Singleton {
 
 
 	public static function p404($reason = null, $type = null) {
-		$view = Core_View::getInstance();
-		if (!Core_Request::getInstance()->isAjax()) {
-			header('HTTP/1.0 404 Not Found');
-		}
+		header('HTTP/1.0 404 Not Found');
 
+		$view = Core_View::getInstance();
 		if (is_file($view->getDirectory() . '$maintenance/404.phtml')) {
 			$view->reason = $reason;
 			$view->type = $type;
 			$view->backtrace = debug_backtrace();
 
-			$view->setMainFile('$maintenance/404.phtml');
+			$view->setLayoutFile('$maintenance/404.phtml');
 			$view->enableLayout();
 			$view->displayLayout();
 		} else {

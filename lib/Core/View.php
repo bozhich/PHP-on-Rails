@@ -169,6 +169,9 @@ class Core_View extends Core_Singleton {
 		if (is_null($this->file_directory)) {
 			$this->initPaths();
 		}
+		if (is_null($this->file_directory)) {
+			$this->initPaths();
+		}
 		if (!$file) {
 			$file = $this->main_file;
 		}
@@ -182,12 +185,14 @@ class Core_View extends Core_Singleton {
 		if (cfg()->dev_mode) {
 			return $contents;
 		}
+		
+		return $contents;
 
 		@list($head, $body) = explode('<body', $contents);
 		$body = '<body ' . $body;
 
 		// work on the head
-		$head = preg_replace('[\r\n|\n]', '', $head);
+		$head = preg_replace('[\r\n|\n]', ' ', $head);
 		$head = preg_replace('[  ]', '', $head);
 		$head = preg_replace('#	#', '', $head);
 

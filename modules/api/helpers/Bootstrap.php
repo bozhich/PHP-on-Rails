@@ -21,9 +21,5 @@ class Api_BootstrapHelper extends Core_Bootstrap {
 
 	protected function initView() {
 		$this->view = Core_View::getInstance();
-		$this->view->addHelper(new Default_View_BaseHelper());
-		$this->view->addHelper(new Default_View_MessagesHelper());
-		$this->view->addHelper(new Default_View_PagingHelper());
-		$this->view->addHelper(new Default_View_NotificationsHelper());
 	}
 }

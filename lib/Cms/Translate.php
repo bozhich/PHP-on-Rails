@@ -29,9 +29,9 @@ class Cms_Translate {
 			if ($rs) {
 				$translate = $rs->value;
 			} else {
-				$translate = '!' . $tag . '!';
+				$translate = '' . $tag . '';
 			}
-			$a = self::cacheSet(self::hash($tag), $translate, $set_language);
+			self::cacheSet(self::hash($tag), $translate, $set_language);
 		}
 
 		if (!$translate) {

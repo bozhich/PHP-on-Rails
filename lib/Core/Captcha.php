@@ -5,13 +5,13 @@
  */
 class Core_Captcha extends Core_Singleton {
 
-	const SECRET = '6Lcu7xMTAAAAAFJsLDp-Vod4ycMMuALWLMt2XrJq';
-	const SITE_KEY = '6Lcu7xMTAAAAAJBK8RpZnO5c4hBX711BSuxnZYL8';
+	const SECRET = 'XX';
+	const SITE_KEY = 'YY';
 
 	public static function check($captcha) {
 		$curl = curl_init();
 		$fields = array(
-			'secret' => self::SECRET,
+			'secret'   => self::SECRET,
 			'response' => $captcha,
 			'remoteip' => $_SERVER['REMOTE_ADDR']
 		);
@@ -34,6 +34,7 @@ class Core_Captcha extends Core_Singleton {
 		curl_close($curl);
 
 		$resp = Core_Tools::JsonDecode($resp);
+
 		return $resp['success'];
 	}
 }

@@ -8,7 +8,6 @@ class Migration_MigrationModel extends Core_Model {
 				  `id` int(11) NOT NULL AUTO_INCREMENT,
 				  `name` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
 				  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				  `executed` tinyint(4) DEFAULT "0",
 				  PRIMARY KEY (`id`)
 				) ENGINE=InnoDB DEFAULT CHARSET=utf8;';
 		Core_Db::query($query);

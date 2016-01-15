@@ -16,6 +16,16 @@ class Default_BootstrapHelper extends Core_Bootstrap {
 		Core_Db::init(cfg()->db_data);
 	}
 
+
+	/**
+	 *
+	 */
+	protected function loadDbCfg() {
+		$cfg_data = Default_ConfigModel::getAll(array());
+		$cfg_data = array_map('boolval', $cfg_data);
+		cfg()->setStoreData($cfg_data);
+	}
+
 	/**
 	 *
 	 */
@@ -28,9 +38,10 @@ class Default_BootstrapHelper extends Core_Bootstrap {
 	 *
 	 */
 	protected function checkMaintenance() {
-		if (cfg()->maintenance !== false) {
-			$this->view->setLayoutFile('$maintenance/maintenance.phtml');
-			$this->view->displayLayout();
+		$ip = $this->getRequest()->getServer('REMOTE_ADDR');
+		if (cfg()->maintenance && !in_array($ip, cfg()->dev_ips)) {
+			$this->getView()->setLayoutFile('$maintenance/maintenance.phtml');
+			$this->getView()->displayLayout();
 			die();
 		}
 	}
@@ -123,12 +134,20 @@ class Default_BootstrapHelper extends Core_Bootstrap {
 
 
 	protected function initDebug() {
-		if (class_exists('NDebugger')) {
-			NDebugger::enable(NDebugger::DETECT, cfg()->error_path, cfg()->mail_user);
-			//NDebugger::$logDirectory = cfg()->error_path;
-			NDebugger::$strictMode = true;
-		} else {
-			Tracy\Debugger::enable(constant(cfg()->enviroment), cfg()->error_path);
+		Tracy\Debugger::enable(constant(cfg()->enviroment), cfg()->error_path);
+	}
+
+
+	/* Dev env only */
+	protected function getMigrationStatistics() {
+		if (cfg()->dev_mode) {
+			$migration_stats = Core_Migration_Factory::check(true);
+			if (count($migration_stats) > 0) {
+				Tracy\Debugger::barDump($migration_stats, '[DATABASE MIGRATION]');
+				Tracy\Debugger::barDump('php ' . cfg()->root_path . 'index.php ' . cfg()->getId() . ' migration update', '[DATABASE UPDATE]');
+			} else {
+				Tracy\Debugger::barDump('UP TO DATE', '[DATABASE]');
+			}
 		}
 	}
 }

@@ -6,14 +6,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
 	<title><?= __('Error 404') ?></title>
-	<?= Cms_Packer::css(md5('404'), array(// css files here
-	));
-	?>
+	<?= Cms_Packer::css(md5('404'), array()); ?>
 
 </head>
 
 <body class="nifty-ready mar-no pace-done">
 <div id="container" class="cls-container">
+	404
 	<? if (cfg()->dev_mode): ?>
 		<div style="background: rgba(0, 0, 0, 0.8); margin: 50px 5px; display: none;">
 			<pre><?= $this->reason ?></pre>

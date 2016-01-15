@@ -3,21 +3,21 @@
 class Migration_CreateTranslateFile extends Core_Migration_Abstract  {
 
 	const NAME = 'CreateTranslate';
-	const CREATED_AT = '1445973523';
+	const CREATED_AT = 1445614722;
 	const CREATED_IN_CFG = 'luka';
 
 	public function up() {
 		$query = "CREATE TABLE `translate` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `tag` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `tag_hash` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `value` text CHARACTER SET utf8 COLLATE utf8_bin,
-  `language_code` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tag` varchar(255) DEFAULT NULL,
+  `tag_hash` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `language_code` varchar(255) DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `not_found_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `tag_hash` (`tag_hash`) USING BTREE,
-  UNIQUE KEY `tag_hash_2` (`tag_hash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=642 DEFAULT CHARSET=utf8";
+  UNIQUE KEY `tag_hash` (`tag_hash`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3588 DEFAULT CHARSET=utf8";
 		return $query;
 	}
 

@@ -127,7 +127,15 @@ class Core_Tools {
 		$types = array('B', 'KB', 'MB', 'GB', 'TB');
 		for ($i = 0; $bytes >= 1024 && $i < (count($types) - 1); $bytes /= 1024, $i++) ;
 
-		return (round($bytes, 2) . " " . $types[$i]);
+//		return (round($bytes, 2) . " " . $types[$i]);
+		return (round($bytes, 2));
+	}
+
+	public static function calculatePercent($from, $total, $precision = 2) {
+		if ($from == 0 || $total == 0) {
+			return 0;
+		}
+		return round(($from / $total) * 100, $precision);
 	}
 }
 

@@ -19,7 +19,7 @@ class Core_Bootstrap {
 
 
 	/**
-	 * @return mixed
+	 * @return Core_Request
 	 */
 	final public function getRequest() {
 		return Core_Request::getInstance();

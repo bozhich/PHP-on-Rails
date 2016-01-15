@@ -336,6 +336,7 @@ class Core_Curl extends Core_Singleton {
 		} else {
 			$ch->response = curl_exec($ch->curl);
 		}
+
 		$ch->curl_error_code = curl_errno($ch->curl);
 		$ch->curl_error_message = curl_error($ch->curl);
 		$ch->curl_error = !($ch->curl_error_code === 0);

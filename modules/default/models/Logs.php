@@ -24,6 +24,24 @@ class Default_LogsModel extends Core_Model {
 
 
 	public static function getStats($group) {
-		return Core_Db::select('COUNT(*)')->as('count')->select('date(timestamp)')->as('date')->from(self::$table)->groupBy($group)->fetchAssoc('date');
+		return Core_Db::select('COUNT(*)')->as('count')
+						->select('date(timestamp)')->as('date')
+						->from(self::$table)
+						->where('month(timestamp) = month(now())')
+						->groupBy($group)->fetchAssoc('date');
+	}
+
+	public static function getUserLastLogin($user_id) {
+		$last_login_rs = Core_Db::select('timestamp')
+			->from(static::$table)
+			->where('user_id', '=', $user_id)
+			->orderBy('timestamp', 'DESC')
+			->fetch();
+
+		if (!$last_login_rs) {
+			return false;
+		}
+
+		return $last_login_rs->timestamp;
 	}
 }

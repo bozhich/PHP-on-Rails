@@ -4,6 +4,71 @@
  * Class Core_String
  */
 class Core_String {
+	private static $bg_to_en_letters = array(
+		'А'                 => 'a',
+		'Б'                 => 'b',
+		'В'                 => 'v',
+		'Г'                 => 'g',
+		'Д'                 => 'd',
+		'Е'                 => 'e',
+		'Ж'                 => 'zh',
+		'З'                 => 'z',
+		'И'                 => 'i',
+		'Й'                 => 'y',
+		'К'                 => 'k',
+		'Л'                 => 'l',
+		'М'                 => 'm',
+		'Н'                 => 'n',
+		'О'                 => 'o',
+		'П'                 => 'p',
+		'Р'                 => 'r',
+		'С'                 => 's',
+		'Т'                 => 't',
+		'У'                 => 'u',
+		'Ф'                 => 'f',
+		'Х'                 => 'h',
+		'Ц'                 => 'tz',
+		'Ч'                 => 'ch',
+		'Ш'                 => 'sh',
+		'Щ'                 => 'sht',
+		'Ь'                 => 'u',
+		'Ъ'                 => 'u',
+		'Ю'                 => 'yu',
+		'Я'                 => 'ya',
+		'а'                 => 'a',
+		'б'                 => 'b',
+		'в'                 => 'v',
+		'г'                 => 'g',
+		'д'                 => 'd',
+		'е'                 => 'e',
+		'ж'                 => 'zh',
+		'з'                 => 'z',
+		'и'                 => 'i',
+		'й'                 => 'y',
+		'к'                 => 'k',
+		'л'                 => 'l',
+		'м'                 => 'm',
+		'н'                 => 'n',
+		'о'                 => 'o',
+		'п'                 => 'p',
+		'р'                 => 'r',
+		'с'                 => 's',
+		'т'                 => 't',
+		'у'                 => 'u',
+		'ф'                 => 'f',
+		'х'                 => 'h',
+		'ц'                 => 'tz',
+		'ч'                 => 'ch',
+		'ш'                 => 'sh',
+		'щ'                 => 'sht',
+		'ь'                 => 'u',
+		'ъ'                 => 'u',
+		'ю'                 => 'yu',
+		'я'                 => 'ya',
+		'[!@\#$%^&*()><_ ]' => '-',
+		'--'                => '-',
+	);
+
 	/**
 	 * @param $word
 	 * @return string
@@ -86,5 +151,21 @@ class Core_String {
 	 */
 	public static function crypt($str) {
 		return md5($str);
+	}
+
+
+	/**
+	 * @param $str
+	 * @return string
+	 */
+	public static function slug($str) {
+		$str = trim($str);
+		foreach (self::$bg_to_en_letters as $search => $replace) {
+			$str = preg_replace('#' . $search . '#', $replace, $str);
+		}
+
+		$str = preg_replace('# #', '-', $str);
+		$str = preg_replace('#_#', '-', $str);
+		return strtolower($str);
 	}
 }

@@ -73,7 +73,7 @@ class Core_Cfg extends Core_Singleton {
 	/**
 	 * @param array $data
 	 */
-	protected function setStoreData(array $data) {
+	public function setStoreData(array $data) {
 		$this->store = array_merge($this->store, $data);
 	}
 
