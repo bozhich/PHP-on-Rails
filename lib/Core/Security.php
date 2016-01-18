@@ -4,7 +4,7 @@
  * Class Core_Security
  */
 class Core_Security {
-	const SALT = 'CHUCK_NORRIS';
+	const SALT = '';
 
 	/**
 	 * @param $pass

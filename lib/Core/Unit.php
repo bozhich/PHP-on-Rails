@@ -3,6 +3,7 @@
  * Class Core_Db
  */
 require cfg()->root_path . 'vendor/autoload.php';
+
 class Core_Db extends dibi {
 
 	/**
@@ -25,7 +26,6 @@ class Core_Db extends dibi {
 						'formatDate'     => "Y-m-d",
 						'formatDateTime' => 'Y-m-d H:i:s',
 					),
-//todo: used for mysql 
 //					'options'    => array(
 //						MYSQLI_OPT_CONNECT_TIMEOUT => 30
 //					),
@@ -37,6 +37,7 @@ class Core_Db extends dibi {
 				$panel = new Dibi\Bridges\Tracy\Panel;
 				$panel->register($connection);
 			} catch (DibiException $e) {
+				dd($e->getMessage());
 				$view = Core_View::getInstance();
 				$view->setLayoutFile('$maintenance/db_connect.phtml');
 				$view->displayLayout();

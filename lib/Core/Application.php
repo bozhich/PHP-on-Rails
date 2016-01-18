@@ -64,6 +64,7 @@ class Core_Application extends Core_Singleton {
 			'helpers'     => 'Helper',
 			'files'       => 'File', // mainly used for migrations
 		);
+
 		foreach ($module_components as $component_directory => $component_id) {
 			// Ako zapochva s Core_ znachi niama da stoi v modulnite komponenti
 			if (substr($class_name, 0, 5) == 'Core_') {
@@ -79,23 +80,13 @@ class Core_Application extends Core_Singleton {
 			}
 		}
 
-		// dibi and tracy loading shits...
-//		if (strstr($class_name, 'dibi')) {
-//			$file = LIB_PATH . 'Core' . DS . $class_name . '.php';
-//		} else if (strstr($class_name, 'Dibi\\Bridges\\Tracy\\')) {
-//			$file_name = str_replace('Dibi\\Bridges', 'bridges', $class_name);
-//			$file = LIB_PATH . 'Core' . DS . str_replace('\\', DS, $file_name) . '.php';
-//		} else if (strstr($class_name, 'Tracy')) {
-//			$file = LIB_PATH . 'Core' . DS . 'bridges' . DS . str_replace('\\', DS, $class_name) . '.php';
-//		}
 
 
 		if (empty($file)) {
 			$file = LIB_PATH . str_replace('_', DS, $class_name) . '.php';
 		}
-
 		if (is_file($file)) {
-			include $file;
+			include_once $file;
 		}
 	}
 

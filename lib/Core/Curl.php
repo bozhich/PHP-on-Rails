@@ -92,10 +92,8 @@ class Core_Curl extends Core_Singleton {
 		@list($controller, $action, $id) = $data;
 
 		$url = $this->getUrl() . '/' . self::API_MODULE_NAME . '/' . $controller . '/' . $action . '/' . $id;
-		bd($url);
 		$this->setopt(CURLOPT_URL, $url);
 		if (!empty($params)) {
-			bd($params);
 			$this->setOpt(CURLOPT_POSTFIELDS, $this->_postfields($params));
 			$this->setHeader('Expect:', '');
 		} else {
