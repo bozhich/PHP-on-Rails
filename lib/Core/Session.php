@@ -36,9 +36,9 @@ class Core_Session extends Core_Singleton {
 	public function __construct() {
 		parent::__construct();
 
-		if (PHP_SAPI == 'cli') {
-			throw new Exception('You can`t create session in console');
-		}
+//		if (PHP_SAPI == 'cli') {
+//			throw new Exception('You can`t create session in console');
+//		}
 
 		$this->request = Core_Request::getInstance();
 
@@ -130,7 +130,7 @@ class Core_Session extends Core_Singleton {
 		$token = Core_Crypt::generete($token, self::NAME_PERSISTENT);
 		setcookie(self::NAME_PERSISTENT, $token, time() + self::PERSISTENT_TIME, $this->request->getHomeDir());
 
-		Default_UsersModel::set(array(
+		Default_PlayersModel::set(array(
 			'token' => $token,
 		), array(
 			'id' => $this->registries['user']->id,

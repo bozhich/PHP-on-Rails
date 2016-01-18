@@ -1,7 +1,5 @@
 <?php
 
-class Const_Auth extends Const_Abstract {
-	const SIGN_IN_TYPE_SITE = 1;
-	const SIGN_IN_TYPE_FACEBOOK = 2;
-	const SIGN_IN_TYPE_GOOGLE = 3;
+class Const_Tests extends Const_Abstract {
+	const RUN_ALL_TESTS = 'All';
 }
