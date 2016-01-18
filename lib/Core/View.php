@@ -10,7 +10,7 @@ class Core_View extends Core_Singleton {
 
 	protected $main_file = null;
 
-	protected $disable_layout_file = false;
+	protected $disable_layout_file = true;
 
 	protected $disable_main_file = false;
 
