@@ -34,6 +34,8 @@ function s() {
 
 // Translate
 function __($tag) {
+	return $tag;
+
 	return call_user_func(array('Cms_Translate', 'get'), $tag, array_slice(func_get_args(), 1));
 }
 
@@ -50,36 +52,49 @@ function cfg() {
 	return Core_Cfg::getInstance();
 }
 
-function df($file, $line) {
-	echo Tracy\BlueScreen::highlightFile($file, $line);
-}
-
 function dd() {
+	if (PHP_SAPI == 'cli') {
+		$args = func_get_args();
+		foreach ($args as $var) {
+			var_dump($var);
+		}
+		die;
+	}
+	$has_bar = true;
+	try {
+		Core_Debug::getInstance()->getBar()->getCollector('DUMP');
+	} catch (Exception $e) {
+		$has_bar = false;
+	}
+	if (!$has_bar) {
+		Core_Debug::getInstance()->getBar()->addCollector(new DebugBar\DataCollector\MessagesCollector('DUMP'));
+	}
 	$args = func_get_args();
 	foreach ($args as $var) {
-		Tracy\Debugger::dump($var);
+		Core_Debug::getInstance()->getBar()['DUMP']->info($var);
 	}
-	die();
 }
+
 
 function d() {
+	if (PHP_SAPI == 'cli') {
+		$args = func_get_args();
+		foreach ($args as $var) {
+			var_dump($var);
+		}
+	}
+	$has_bar = true;
+	try {
+		Core_Debug::getInstance()->getBar()->getCollector('DUMP');
+	} catch (Exception $e) {
+		$has_bar = false;
+	}
+	if (!$has_bar) {
+		Core_Debug::getInstance()->getBar()->addCollector(new DebugBar\DataCollector\MessagesCollector('DUMP'));
+	}
 	$args = func_get_args();
 	foreach ($args as $var) {
-		Tracy\Debugger::dump($var);
-	}
-}
-
-function bd() {
-	$args = array_reverse(func_get_args());
-	$title = '[dump]';
-	foreach ($args as $var) {
-		if (is_string($var)) {
-			if (preg_match('#\[(.*)\]#', $var)) {
-				$title = $var;
-				continue;
-			}
-		}
-		Tracy\Debugger::barDump($var, $title);
+		Core_Debug::getInstance()->getBar()['DUMP']->info($var);
 	}
 }
 

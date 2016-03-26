@@ -1,111 +1,169 @@
 <?php
 
-/**
- * Class Core_Model
- */
-abstract class Core_Model extends Core_Db {
-	/**
-	 * @param $data
-	 * @param $where
-	 * @return $this|DibiResult|FALSE|IDibiResultDriver|int|NULL
-	 */
-	public static function set($data, $where) {
-		return dibi::update(static::$table, $data)->where($where)->execute();
-	}
+abstract class Core_Model extends Core_Singleton {
+	protected static $table = false;
 
 	/**
-	 * @param $data
-	 * @return array|bool|DibiRow|FALSE|mixed
+	 * @var Core_Db
 	 */
-	public static function get($data) {
-		return dibi::select('*')->from(static::$table)->where($data)->fetch();
-	}
+	private static $db;
 
-	/**
-	 * @param $data
-	 * @return $this|DibiResult|FALSE|IDibiResultDriver|int|NULL
-	 */
-	public static function add($data) {
-		return dibi::insert(static::$table, $data)->execute();
-	}
 
-	/**
-	 * @param $data
-	 * @return array
-	 */
-	public static function getAll($data) {
-		return dibi::select('*')->from(static::$table)->where($data)->fetchAll();
-	}
-
-	/**
-	 * @param $data
-	 * @param $offset
-	 * @param $limit
-	 * @return array
-	 */
-	public static function getList($data, $offset, $limit, $order_field = '', $order_type = 'ASC') {
-		if ($order_field != '') {
-			return dibi::select('*')->from(static::$table)->where($data)->orderBy($order_field, $order_type)->fetchAll($offset, $limit);
+	public function __construct() {
+		if (!isset(self::$db)) {
+			self::$db = new Core_Db(cfg()->db_host, cfg()->db_user, cfg()->db_pass, cfg()->db_name, cfg()->db_driver);
 		}
+	}
 
-		return dibi::select('*')->from(static::$table)->where($data)->fetchAll($offset, $limit);
+	/**
+	 * @return Core_Db
+	 */
+	public function getDb() {
+		return self::$db;
 	}
 
 
 	/**
-	 * @param $where
-	 * @return $this|DibiResult|FALSE|IDibiResultDriver|int|NULL
+	 * @param       $table
+	 * @param array $data
+	 * @param array $where
+	 * @return int affected rows
 	 */
-	public static function delete($where) {
-		return dibi::delete(static::$table)->where($where)->execute();
+	protected function sqlSet($table, array $data, array $where) {
+		$binds = array();
+		$sql = 'UPDATE ' . $table . ' SET ';
+		foreach ($data as $field => $value) {
+			$sql .= '"' . $field . '" = :' . $field . ', ';
+			$binds[$field] = $value;
+		}
+		$sql = substr($sql, 0, -2);
+		$sql .= ' WHERE ';
+		foreach ($where as $field => $value) {
+			$sql .= '"' . $field . '" = :' . $field . ' AND ';
+			$binds[$field] = $value;
+		}
+		$sql = substr($sql, 0, -5);
+
+		$stm = $this->getDb()->prepare($sql);
+		$stm->execute($binds);
+
+		return $stm->rowCount();
 	}
 
+
 	/**
-	 * @param $data
-	 * @return $this|DibiResult|FALSE|IDibiResultDriver|int|NULL
+	 * @param array $data
+	 * @param bool  $table
 	 */
-	public static function addIgnore($data) {
-		return dibi::insert(static::$table, $data)->setFlag('ignore', true)->execute();
+	public function add(array $data, $table = false) {
+		if (!$table) {
+			$table = static::$table;
+		}
+		// extract and quote col names from the array keys
+		$cols = array();
+		$vals = array();
+		foreach ($data as $col => $val) {
+			$cols[] = $this->quoteIdentifier($col, true);
+			$vals[] = ':' . $col;
+		}
+		// build the statement
+		$sql = "INSERT INTO "
+			. $table
+			. ' (' . implode(', ', $cols) . ') '
+			. 'VALUES (' . implode(', ', $vals) . ')';
+
+		$stm = $this->getDb()->prepare($sql);
+		$stm->execute($data);
 	}
 
 
 	/**
-	 * @return mixed
+	 * @param $value
+	 * @return string
 	 */
-	public static function getTableName() {
-		return static::$table;
+	protected function quoteIdentifier($value) {
+		$q = '"';
+
+		return ($q . str_replace("$q", "$q$q", $value) . $q);
 	}
 
 
 	/**
-	 * @return mixed
+	 * @param int $length
+	 * @return string
 	 */
-	public static function getCurrentTime() {
-		$rs = dibi::select('NOW()')->as('time')->fetch();
+	public function getRandomString($length = 6) {
+		$stm = $this->getDb()->prepare("SELECT
+					array_to_string(ARRAY(
+							SELECT substr(
+									'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+									trunc(random() * 62)::INTEGER + 1,
+									1
+									)
+								FROM
+								generate_series (1, :length)
+							),
+						''
+					) as string;");
+		$stm->execute(array(
+			'length' => $length
+		));
 
-		return $rs->time;
+		return $stm->fetchColumn();
+	}
+
+
+	/**
+	 * @param $schema
+	 * @param $table
+	 * @return string
+	 */
+	public function checkTableExist($schema, $table) {
+		if (cfg()->db_driver == 'pgsql') {
+			$stm = $this->getDb()->prepare("SELECT
+											count(tablename)
+										FROM
+											pg_catalog.pg_tables
+										WHERE
+											tablename = :table_name
+										AND schemaname = :schema_name;");
+			$stm->execute(array(
+				'table_name'  => $table,
+				'schema_name' => $schema
+			));
+		} else {
+			$stm = $this->getDb()->prepare("SHOW TABLES LIKE :table_name");
+			$stm->execute(array(
+				'table_name'  => $table,
+			));
+		}
+		return $stm->fetchColumn();
 	}
 
 	/**
 	 * @param array $where
-	 * @return mixed
+	 * @param array $select
+	 * @return array
 	 */
-	public static function getCount($where = array()) {
-		return dibi::select('count(*)')->as('cnt')->from(static::$table)->where($where)->fetch();
-	}
+	public function get($where = array(), $select = array('*'), $table = false) {
+		if (!$table) {
+			$table = static::$table;
+		}
 
-	/**
-	 * @param string $key
-	 * @param array  $where
-	 * @return array|DibiRow|null
-	 */
-	public static function fetchAssoc($key = 'id', $where = array()) {
-		return Core_Db::select('*')->from(static::$table)->where($where)->fetchAssoc($key);
-	}
+		$query = "SELECT " . implode(',', $select) . "
+				    FROM
+						" . $table . "
+					WHERE 1 = 1";
 
+		$params = array();
+		foreach ($where as $col => $val) {
+			$query .= ' AND ' . $this->quoteIdentifier($col) . ' = :' . $col;
+			$params[$col] = $val;
+		}
+		$stm = $this->getDb()->prepare($query);
+		$stm->execute($params);
 
-	public static function getCacheName() {
-		return static::$table;
+		return $stm->fetchAll();
 	}
 }
 

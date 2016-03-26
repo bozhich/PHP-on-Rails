@@ -1,10 +1,15 @@
 <?php
 
 class Core_Migration_Abstract {
+	/**
+	 * @var Migration_MigrationModel
+	 */
+	protected $migration_model;
 
 	public function __construct() {
-		if (!Migration_MigrationModel::checkSelfTable()) {
-			Migration_MigrationModel::createSelfTable();
+		$this->migration_model = Migration_MigrationModel::getInstance();
+		if (!$this->migration_model->checkSelfTable()) {
+			$this->migration_model->createSelfTable();
 		}
 	}
 
@@ -17,23 +22,29 @@ class Core_Migration_Abstract {
 			return false;
 		}
 
-		$query = $this->up();
-		Core_Db::query($query);
+		$queries = $this->up();
+		foreach ($queries as $query) {
+			// @todo
+			//Core_Db::query($query);
+		}
 		$this->insertRun();
 
 		return true;
 	}
 
 	public function rollback() {
-		$query = $this->down();
-		if (strlen($query) > 20) {
+		$queries = $this->down();
+		if (empty($queries)) {
+			return;
+		}
+		foreach ($queries as $query) {
 			Core_Db::query($query);
 			$this->insertRollback();
 		}
 	}
 
 	private function shouldWeRun() {
-		$migration_data = Migration_MigrationModel::get(array(
+		$migration_data = $this->migration_model->get(array(
 			'name' => static::NAME
 		));
 		if (!$migration_data) {
@@ -44,7 +55,7 @@ class Core_Migration_Abstract {
 	}
 
 	private function insertRun() {
-		Migration_MigrationModel::add(array(
+		$this->migration_model->add(array(
 			'name' => static::NAME
 		));
 	}

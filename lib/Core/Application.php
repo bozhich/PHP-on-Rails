@@ -52,8 +52,8 @@ class Core_Application extends Core_Singleton {
 		ini_set('ignore_repeated_errors', 'On');
 		ini_set('log_errors', 'On');
 
-		//set_error_handler(array('Core_ErrorLog', 'errorHandler'));
-		//set_exception_handler(array('Core_ErrorLog', 'exceptionHandler'));
+		set_error_handler(array('Core_ErrorLog', 'errorHandler'));
+		set_exception_handler(array('Core_ErrorLog', 'exceptionHandler'));
 	}
 
 
@@ -80,6 +80,7 @@ class Core_Application extends Core_Singleton {
 			}
 		}
 
+		require ROOT_PATH . 'public' . DS . 'vendor' . DS . 'autoload.php';
 
 
 		if (empty($file)) {

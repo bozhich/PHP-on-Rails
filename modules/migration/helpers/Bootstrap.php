@@ -15,13 +15,6 @@ class Migration_BootstrapHelper extends Core_Bootstrap {
 		cfg()->load($match_id, Core_Cfg::MATCH_TYPE_ID);
 	}
 
-	/**
-	 *
-	 */
-	protected function initDb() {
-		Core_Db::init(cfg()->db_data);
-	}
-
 	protected function disableLayout() {
 		Core_View::getInstance()->disableLayout();
 	}

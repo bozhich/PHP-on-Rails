@@ -34,7 +34,7 @@ class Core_Migration_Factory {
 			} catch (DibiException $e) {
 				echo 'ROLLING BACK: ' . $migration_class_name . PHP_EOL;
 				$migration_object->rollback();
-//				die;
+				die;
 			}
 		}
 

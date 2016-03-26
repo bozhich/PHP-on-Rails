@@ -115,7 +115,7 @@ class Core_Url extends Core_Singleton {
 		}
 
 
-			header('Location: ' . $address, true, $code);
+		header('Location: ' . $address, true, $code);
 		die();
 	}
 }
