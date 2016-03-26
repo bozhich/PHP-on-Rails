@@ -1,8 +1,8 @@
 {
-  "name": "bozhich/php-on-rails",
+  "name": "bozhich/mvc",
   "description": "php-on-rails-framework",
   "minimum-stability": "dev",
-  "license": "GPL",
+  "license": "proprietary",
   "authors": [
     {
       "name": "Luka Bozhich",
@@ -10,8 +10,7 @@
     }
   ],
   "require": {
-    "dibi/dibi": "^3.0",
-    "tracy/tracy": "^2.4"
+    "maximebf/debugbar": "1.11.0"
   },
   "require-dev": {
     "phpunit/phpunit": "5.1.*",
