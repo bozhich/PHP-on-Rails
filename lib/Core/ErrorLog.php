@@ -4,11 +4,26 @@
  * Class Core_ErrorLog
  */
 class Core_ErrorLog {
+	/**
+	 *
+	 */
 	const TYPE_APPLICATION = 1;
+	/**
+	 *
+	 */
 	const TYPE_EXCEPTION = 2;
+	/**
+	 *
+	 */
 	const TYPE_DB = 3;
+	/**
+	 *
+	 */
 	const TYPE_MISC = 4;
 
+	/**
+	 * @var array
+	 */
 	protected static $files_prefix = array(
 		self::TYPE_APPLICATION => 'error_application_',
 		self::TYPE_EXCEPTION   => 'error_exception_',
@@ -16,6 +31,13 @@ class Core_ErrorLog {
 		self::TYPE_MISC        => 'error_misc_',
 	);
 
+	/**
+	 * @param $type
+	 * @param $error
+	 */
+	public static function errorHandler($type, $error) {
+		self::save($type, $error);
+	}
 
 	/**
 	 * @param $type
@@ -46,20 +68,10 @@ class Core_ErrorLog {
 		file_put_contents($file_path, $content, FILE_APPEND);
 	}
 
-
-	/**
-	 * @param $type
-	 * @param $error
-	 */
-	public static function errorHandler($type, $error) {
-		self::save(self::TYPE_APPLICATION, $error);
-	}
-
-
 	/**
 	 * @param $e
 	 */
-	public static function exceptionHandler($e) {
+	public static function exceptionHandler(Exception $e) {
 		self::save(self::TYPE_EXCEPTION, $e->getMessage());
 	}
 }

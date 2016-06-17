@@ -4,6 +4,9 @@
  * Class Core_Security
  */
 class Core_Security {
+	/**
+	 *
+	 */
 	const SALT = '';
 
 	/**

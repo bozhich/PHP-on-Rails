@@ -4,26 +4,59 @@
  * Class Core_View
  */
 class Core_View extends Core_Singleton {
+	/**
+	 * @var null
+	 */
 	protected $layout_file = null;
 
+	/**
+	 * @var null
+	 */
 	protected $file_directory = null;
 
+	/**
+	 * @var null
+	 */
 	protected $main_file = null;
 
+	/**
+	 * @var bool
+	 */
 	protected $disable_layout_file = false;
 
+	/**
+	 * @var bool
+	 */
 	protected $disable_main_file = false;
 
+	/**
+	 * @var array
+	 */
 	protected $store = array();
 
+	/**
+	 * @var array
+	 */
 	protected $helpers = array();
 
+	/**
+	 * @var null
+	 */
 	protected $main_code = null;
 
+	/**
+	 * @var mixed|null
+	 */
 	protected $request = null;
 
+	/**
+	 * @var bool
+	 */
 	protected $ajaxPage = false;
 
+	/**
+	 * @var string
+	 */
 	protected $header_code = '';
 
 	/**
@@ -34,39 +67,12 @@ class Core_View extends Core_Singleton {
 		$this->request = Core_Request::getInstance();
 	}
 
-
-	/**
-	 *
-	 */
-	protected function initPaths() {
-		$this->file_directory = $this->getDirectory();
-
-		if (!$this->main_file) {
-			$main_file = $this->request->getRoute('controller');
-			$main_file .= DS . $this->request->getRoute('action') . '.phtml';
-
-
-			$this->setMainFile($main_file);
-		}
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getDirectory() {
-		return MODULES_PATH . $this->request->getRoute('module') . DS . 'views' . DS;
-	}
-
-	////
-
 	/**
 	 * @param $layout_file
 	 */
 	public function setLayoutFile($layout_file) {
 		$this->layout_file = $layout_file;
 	}
-
 
 	/**
 	 *
@@ -84,44 +90,29 @@ class Core_View extends Core_Singleton {
 		}
 	}
 
+	////
 
 	/**
 	 *
 	 */
-	public function disableLayout() {
-		$this->disable_layout_file = true;
-	}
+	protected function initPaths() {
+		$this->file_directory = $this->getDirectory();
+
+		if (!$this->main_file) {
+			$main_file = $this->request->getRoute('controller');
+			$main_file .= DS . $this->request->getRoute('action') . '.phtml';
 
 
-	/**
-	 *
-	 */
-	public function enableLayout() {
-		$this->disable_layout_file = false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasLayout() {
-		return !$this->disable_layout_file;
+			$this->setMainFile($main_file);
+		}
 	}
 
 	/**
-	 * @param $hepler
+	 * @return string
 	 */
-	public function addHelper($hepler) {
-		$this->helpers[] = $hepler;
+	public function getDirectory() {
+		return MODULES_PATH . $this->request->getRoute('module') . DS . 'views' . DS;
 	}
-
-
-	/**
-	 * @param $code
-	 */
-	public function addMainCode($code) {
-		$this->main_code .= $code;
-	}
-
 
 	/**
 	 * @param $main_file
@@ -129,37 +120,6 @@ class Core_View extends Core_Singleton {
 	public function setMainFile($main_file) {
 		$this->main_file = $main_file;
 	}
-
-
-	/**
-	 *
-	 */
-	protected function displayMain() {
-		print $this->main_code;
-
-		if (!$this->disable_main_file) {
-
-			$this->_include($this->main_file);
-		}
-	}
-
-
-	/**
-	 *
-	 */
-	public function disableMain() {
-		$this->disable_main_file = true;
-	}
-
-
-	/**
-	 *
-	 */
-	public function enableMain() {
-		$this->disable_main_file = false;
-	}
-
-	////
 
 	/**
 	 * @param $file
@@ -185,7 +145,7 @@ class Core_View extends Core_Singleton {
 		if (cfg()->dev_mode) {
 			return $contents;
 		}
-		
+
 		return $contents;
 
 		@list($head, $body) = explode('<body', $contents);
@@ -205,12 +165,62 @@ class Core_View extends Core_Singleton {
 		return $contents;
 	}
 
-
 	/**
 	 * @param $file
 	 */
 	protected function _include($file) {
 		include $this->file_directory . $file;
+	}
+
+	/**
+	 *
+	 */
+	public function disableLayout() {
+		$this->disable_layout_file = true;
+	}
+
+	/**
+	 *
+	 */
+	public function enableLayout() {
+		$this->disable_layout_file = false;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasLayout() {
+		return !$this->disable_layout_file;
+	}
+
+	/**
+	 * @param $hepler
+	 */
+	public function addHelper($hepler) {
+		$this->helpers[] = $hepler;
+	}
+
+	/**
+	 * @param $code
+	 */
+	public function addMainCode($code) {
+		$this->main_code .= $code;
+	}
+
+	/**
+	 *
+	 */
+	public function disableMain() {
+		$this->disable_main_file = true;
+	}
+
+	////
+
+	/**
+	 *
+	 */
+	public function enableMain() {
+		$this->disable_main_file = false;
 	}
 
 	/**
@@ -222,8 +232,6 @@ class Core_View extends Core_Singleton {
 		$this->disable_layout_file = true;
 	}
 
-	////
-
 	/**
 	 * @param $var
 	 * @return null
@@ -232,6 +240,7 @@ class Core_View extends Core_Singleton {
 		return (array_key_exists($var, $this->store)) ? $this->store[$var] : null;
 	}
 
+	////
 
 	/**
 	 * @param $var
@@ -240,7 +249,6 @@ class Core_View extends Core_Singleton {
 	public function __set($var, $value) {
 		$this->store[$var] = $value;
 	}
-
 
 	/**
 	 * @param $name
@@ -263,6 +271,18 @@ class Core_View extends Core_Singleton {
 	 */
 	public function addHeaderCode($code) {
 		$this->header_code .= $code;
+	}
+
+	/**
+	 *
+	 */
+	protected function displayMain() {
+		print $this->main_code;
+
+		if (!$this->disable_main_file) {
+
+			$this->_include($this->main_file);
+		}
 	}
 
 	/**

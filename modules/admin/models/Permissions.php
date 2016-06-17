@@ -5,26 +5,26 @@ class Admin_PermissionsModel extends Core_Model {
 	protected static $table = 'permissions';
 	protected static $name_separator = ' : ';
 
-	public static function getFlag(array $data) {
-		return dibi::select('bit_flag')
-			->from(self::$table)
-			->where($data)
-			->fetchSingle();
+	public function getFlag(array $data) {
+		return $this->get($data, array('bit_flag'));
 	}
 
 	// different logic from the core add
-	public static function add($data) {
-		$data['bit_flag'] = ((self::getNextFlag() * 2) > 0) ? (self::getNextFlag() * 2) : 1;
+	public function add(array $data, $table = false) {
+		$data['bit_flag'] = (($this->getNextFlag() * 2) > 0) ? ($this->getNextFlag() * 2) : 1;
 		$data['name'] =
 			//ucfirst($data['module']) . self::$name_separator .
 			ucfirst($data['controller'])
 			. self::$name_separator . ucfirst($data['action']);
 
-		return dibi::insert(self::$table, $data)->execute();
+
+		parent::add($data);
 	}
 
-	public static function getNextFlag() {
-		return dibi::select('max(bit_flag)')->from(self::$table)->fetchSingle();
+	public function getNextFlag() {
+		$rs = $this->get(array(), array('max(bit_flag) AS max_flag'));
+
+		return $rs['max_flag'];
 	}
 
 	// this get has different fetch method
@@ -32,7 +32,7 @@ class Admin_PermissionsModel extends Core_Model {
 	//	return dibi::select('*')->from(self::$table)->where($where)->fetchAll();
 	//}
 
-	public static function getAll($dummy = array()) {
+	public function getAll($dummy = array()) {
 		return dibi::select('*')->from(self::$table)->where('bit_flag > %i', 0)->fetchAll();
 	}
 

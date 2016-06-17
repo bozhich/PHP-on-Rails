@@ -4,6 +4,9 @@
  * Class Core_Files
  */
 class Core_Files {
+	/**
+	 * @var array
+	 */
 	protected static $ignore = array(
 		'.',
 		'..',
@@ -67,25 +70,6 @@ class Core_Files {
 		return $size;
 	}
 
-
-	/**
-	 * @param $file
-	 * @return bool|int
-	 */
-	public static function fileSize($file) {
-		return is_file($file) ? filesize($file) : false;
-	}
-
-
-	/**
-	 * @param $file
-	 * @return string
-	 */
-	public static function normalFileSize($file) {
-		return self::normalSize(self::fileSize($file));
-	}
-
-
 	/**
 	 * @param $file
 	 * @return mixed
@@ -100,31 +84,43 @@ class Core_Files {
 		return $info;
 	}
 
-
 	/**
-	 * @param       $directory
-	 * @param bool  $sub_folders
-	 * @param array $files
-	 * @return array
+	 * @param $file
+	 * @return string
 	 */
-	public static function listFiles($directory, $sub_folders = true, array $files = array()) {
-		if (is_dir($directory)) {
-			$dir_handle = opendir($directory);
-			while ($file = readdir($dir_handle)) {
-				if (array_search($file, self::$ignore) === false) {
-					if (is_dir($directory . $file) && $sub_folders) {
-						$files = self::listFiles($directory . $file . DS, $sub_folders, $files);
-					} elseif (is_file($directory . $file)) {
-						$files[] = $directory . $file;
-					}
-				}
-			}
-			closedir($dir_handle);
-		}
-
-		return $files;
+	public static function normalFileSize($file) {
+		return self::normalSize(self::fileSize($file));
 	}
 
+	/**
+	 * @param $size
+	 * @return string
+	 */
+	public static function normalSize($size) {
+		if ($size == false) {
+			$size = 0;
+		}
+
+		if ($size >= 1099511627776) {
+			return round($size / 1024 / 1024 / 1024 / 1024, 2) . ' TB';
+		} elseif ($size >= 1073741824) {
+			return round($size / 1024 / 1024 / 1024, 2) . ' GB';
+		} elseif ($size >= 1048576) {
+			return round($size / 1024 / 1024, 2) . ' MB';
+		} elseif ($size >= 1024) {
+			return round($size / 1024, 2) . ' KB';
+		} else {
+			return round($size, 2) . ' Byte';
+		}
+	}
+
+	/**
+	 * @param $file
+	 * @return bool|int
+	 */
+	public static function fileSize($file) {
+		return is_file($file) ? filesize($file) : false;
+	}
 
 	/**
 	 * @param      $directory
@@ -151,30 +147,6 @@ class Core_Files {
 		}
 	}
 
-
-	/**
-	 * @param $size
-	 * @return string
-	 */
-	public static function normalSize($size) {
-		if ($size == false) {
-			$size = 0;
-		}
-
-		if ($size >= 1099511627776) {
-			return round($size / 1024 / 1024 / 1024 / 1024, 2) . ' TB';
-		} elseif ($size >= 1073741824) {
-			return round($size / 1024 / 1024 / 1024, 2) . ' GB';
-		} elseif ($size >= 1048576) {
-			return round($size / 1024 / 1024, 2) . ' MB';
-		} elseif ($size >= 1024) {
-			return round($size / 1024, 2) . ' KB';
-		} else {
-			return round($size, 2) . ' Byte';
-		}
-	}
-
-
 	/**
 	 * @param $file_name
 	 * @return string
@@ -182,7 +154,6 @@ class Core_Files {
 	public static function getExtension($file_name) {
 		return strtolower(substr(strrchr($file_name, '.'), 1));
 	}
-
 
 	/**
 	 * @param      $file_name
@@ -205,7 +176,6 @@ class Core_Files {
 			return rename($file_name, $destination);
 		}
 	}
-
 
 	/**
 	 * @param      $file
@@ -235,6 +205,29 @@ class Core_Files {
 		}
 	}
 
+	/**
+	 * @param       $directory
+	 * @param bool  $sub_folders
+	 * @param array $files
+	 * @return array
+	 */
+	public static function listFiles($directory, $sub_folders = true, array $files = array()) {
+		if (is_dir($directory)) {
+			$dir_handle = opendir($directory);
+			while ($file = readdir($dir_handle)) {
+				if (array_search($file, self::$ignore) === false) {
+					if (is_dir($directory . $file) && $sub_folders) {
+						$files = self::listFiles($directory . $file . DS, $sub_folders, $files);
+					} elseif (is_file($directory . $file)) {
+						$files[] = $directory . $file;
+					}
+				}
+			}
+			closedir($dir_handle);
+		}
+
+		return $files;
+	}
 
 	/**
 	 * @param $path

@@ -1,15 +1,24 @@
 <?php
 include(dirname(__FILE__) . DS . 'Singleton.php');
 
+/**
+ * Class Core_Application
+ */
 class Core_Application extends Core_Singleton {
 	/**
 	 * @var Core_Request
 	 */
 	protected $request;
 
+	/**
+	 * @var bool
+	 */
 	protected $dispatcher_is_breaked = false;
 
 
+	/**
+	 * @throws Exception
+	 */
 	public function __construct() {
 		parent::__construct();
 		// Register autoloader
@@ -42,6 +51,9 @@ class Core_Application extends Core_Singleton {
 	}
 
 
+	/**
+	 *
+	 */
 	protected function setErrorLogging() {
 		if (isset($_GET['debug_asdf']) || cfg()->dev_mode) {
 			ini_set('display_errors', true);
@@ -56,42 +68,9 @@ class Core_Application extends Core_Singleton {
 		set_exception_handler(array('Core_ErrorLog', 'exceptionHandler'));
 	}
 
-
-	protected function autoloader($class_name) {
-		$module_components = array(
-			'controllers' => 'Controller',
-			'models'      => 'Model',
-			'helpers'     => 'Helper',
-			'files'       => 'File', // mainly used for migrations
-		);
-
-		foreach ($module_components as $component_directory => $component_id) {
-			// Ako zapochva s Core_ znachi niama da stoi v modulnite komponenti
-			if (substr($class_name, 0, 5) == 'Core_') {
-				break;
-			}
-
-			if (substr($class_name, -strlen($component_id)) == $component_id) {
-				list($module) = explode('_', $class_name);
-				$class_name = substr($class_name, strlen($module) + 1);
-				$class_name = substr($class_name, 0, -strlen($component_id));
-				$file = MODULES_PATH . strtolower($module) . DS . $component_directory . DS . str_replace('_', DS, $class_name) . '.php';
-				break;
-			}
-		}
-
-		require ROOT_PATH . 'public' . DS . 'vendor' . DS . 'autoload.php';
-
-
-		if (empty($file)) {
-			$file = LIB_PATH . str_replace('_', DS, $class_name) . '.php';
-		}
-		if (is_file($file)) {
-			include_once $file;
-		}
-	}
-
-
+	/**
+	 *
+	 */
 	protected function dispatch() {
 		if ($this->dispatcher_is_breaked) {
 			return;
@@ -126,12 +105,10 @@ class Core_Application extends Core_Singleton {
 		p404('Missing: ' . $controller . (!empty($action) ? '::' . $action : null));
 	}
 
-
-	public function breakDispacher() {
-		$this->dispatcher_is_breaked = true;
-	}
-
-
+	/**
+	 * @param null $reason
+	 * @param null $type
+	 */
 	public static function p404($reason = null, $type = null) {
 		header('HTTP/1.0 404 Not Found');
 
@@ -157,5 +134,49 @@ class Core_Application extends Core_Singleton {
 		}
 
 		die();
+	}
+
+	/**
+	 *
+	 */
+	public function breakDispacher() {
+		$this->dispatcher_is_breaked = true;
+	}
+
+	/**
+	 * @param $class_name
+	 */
+	protected function autoloader($class_name) {
+		$module_components = array(
+			'controllers' => 'Controller',
+			'models'      => 'Model',
+			'helpers'     => 'Helper',
+			'files'       => 'File', // mainly used for migrations
+		);
+
+		foreach ($module_components as $component_directory => $component_id) {
+			// Ako zapochva s Core_ znachi niama da stoi v modulnite komponenti
+			if (substr($class_name, 0, 5) == 'Core_') {
+				break;
+			}
+
+			if (substr($class_name, -strlen($component_id)) == $component_id) {
+				list($module) = explode('_', $class_name);
+				$class_name = substr($class_name, strlen($module) + 1);
+				$class_name = substr($class_name, 0, -strlen($component_id));
+				$file = MODULES_PATH . strtolower($module) . DS . $component_directory . DS . str_replace('_', DS, $class_name) . '.php';
+				break;
+			}
+		}
+
+		require ROOT_PATH . 'public' . DS . 'vendor' . DS . 'autoload.php';
+
+
+		if (empty($file)) {
+			$file = LIB_PATH . str_replace('_', DS, $class_name) . '.php';
+		}
+		if (is_file($file)) {
+			include_once $file;
+		}
 	}
 }

@@ -1,15 +1,29 @@
 <?php
 // Link
+/**
+ * @param       $address
+ * @param array $options
+ * @return mixed
+ */
 function l($address, array $options = array()) {
 	return Core_Url::getInstance()->getAddress($address, $options);
 }
 
 // Redirect
+/**
+ * @param       $address
+ * @param null  $code
+ * @param array $options
+ * @return mixed
+ */
 function r($address, $code = null, array $options = array()) {
 	return Core_Url::getInstance()->redirect($address, $code, $options);
 }
 
 // Redirect Referer
+/**
+ * @param null $address
+ */
 function rr($address = null) {
 	$request = Core_Request::getInstance();
 	if ($request->getServer('HTTP_REFERER')) {
@@ -33,6 +47,10 @@ function s() {
 }
 
 // Translate
+/**
+ * @param $tag
+ * @return mixed
+ */
 function __($tag) {
 	return $tag;
 
@@ -41,6 +59,10 @@ function __($tag) {
 
 
 // Page 404
+/**
+ * @param null $reason
+ * @param null $type
+ */
 function p404($reason = null, $type = null) {
 	Core_Application::p404($reason, $type);
 }
@@ -52,53 +74,11 @@ function cfg() {
 	return Core_Cfg::getInstance();
 }
 
-function dd() {
-	if (PHP_SAPI == 'cli') {
-		$args = func_get_args();
-		foreach ($args as $var) {
-			var_dump($var);
-		}
-		die;
-	}
-	$has_bar = true;
-	try {
-		Core_Debug::getInstance()->getBar()->getCollector('DUMP');
-	} catch (Exception $e) {
-		$has_bar = false;
-	}
-	if (!$has_bar) {
-		Core_Debug::getInstance()->getBar()->addCollector(new DebugBar\DataCollector\MessagesCollector('DUMP'));
-	}
-	$args = func_get_args();
-	foreach ($args as $var) {
-		Core_Debug::getInstance()->getBar()['DUMP']->info($var);
-	}
-}
-
-
-function d() {
-	if (PHP_SAPI == 'cli') {
-		$args = func_get_args();
-		foreach ($args as $var) {
-			var_dump($var);
-		}
-	}
-	$has_bar = true;
-	try {
-		Core_Debug::getInstance()->getBar()->getCollector('DUMP');
-	} catch (Exception $e) {
-		$has_bar = false;
-	}
-	if (!$has_bar) {
-		Core_Debug::getInstance()->getBar()->addCollector(new DebugBar\DataCollector\MessagesCollector('DUMP'));
-	}
-	$args = func_get_args();
-	foreach ($args as $var) {
-		Core_Debug::getInstance()->getBar()['DUMP']->info($var);
-	}
-}
-
 if (!function_exists('boolval')) {
+	/**
+	 * @param $val
+	 * @return bool
+	 */
 	function boolval($val) {
 		return (bool) $val;
 	}

@@ -1,14 +1,38 @@
 <?php
 
+/**
+ * Class Cms_UserData
+ */
 class Cms_UserData {
+	/**
+	 *
+	 */
 	const ATTR_ALL = 1;
+	/**
+	 *
+	 */
 	const ATTR_USER = 2;
+	/**
+	 *
+	 */
 	const ATTR_MESSAGES = 3;
+	/**
+	 *
+	 */
 	const ATTR_NOTIFICATIONS = 4;
 
+	/**
+	 *
+	 */
 	const CACHE_INJECT_PREFIX = 'refresh_user_data_';
+	/**
+	 *
+	 */
 	const CACHE_ACTIVITY_PREFIX = 'activity_user_data_'; // used to e stored in the cache
 
+	/**
+	 * @var array
+	 */
 	protected static $all_attributes = array(
 		self::ATTR_ALL,
 		self::ATTR_USER,
@@ -60,21 +84,6 @@ class Cms_UserData {
 		return $user_data;
 	}
 
-
-	/**
-	 * @param       $user_id
-	 * @param array $attributes
-	 */
-	public static function injectRefresh($user_id, array $attributes) {
-		$cache_id = self::CACHE_INJECT_PREFIX . $user_id;
-		if (Core_Cache::get($cache_id)) {
-			$attributes = array_merge($attributes, Core_Cache::get($cache_id));
-		}
-		Core_Cache::set($cache_id, $attributes, 180);
-
-	}
-
-
 	/**
 	 * @param $user_id
 	 * @param $user_data
@@ -100,31 +109,6 @@ class Cms_UserData {
 				break;
 			}
 		}
-	}
-
-
-	/**
-	 * @param $user_id
-	 * @param $user_data
-	 *
-	 * When you're accessing $_SESSION, you're not just changing the current script's copy of the data read from
-	 * the session, you're writing SafeString objects back into the active session.
-	 * But putting custom objects in the session is dodgy and something I would generally try to avoid.
-	 * To be able to do it you have to have defined the class in question before calling session_start;
-	 * if you don't, PHP's session handler won't know how to deserialise the instances of that class, and you'll
-	 * end up with the __PHP_Incomplete_Class Object.
-	 * @http://stackoverflow.com/questions/2010427/php-php-incomplete-class-object-with-my-session-data
-	 */
-	protected static function loadMessages($user_id, &$user_data) {
-		if (isset($user_data['messages'])) {
-			unset($user_data['messages']);
-		}
-
-		$all_messages = Default_MessagesModel::getAll(array(
-			'status'  => Const_Messages::STATUS_NEW,
-			'to_user_id' => $user_id,
-		));
-		$user_data['messages']['new'] = count($all_messages);
 	}
 
 	/**
@@ -216,6 +200,43 @@ class Cms_UserData {
 			);
 			$processed_notifications_count++;
 		}
+
+	}
+
+	/**
+	 * @param $user_id
+	 * @param $user_data
+	 *
+	 * When you're accessing $_SESSION, you're not just changing the current script's copy of the data read from
+	 * the session, you're writing SafeString objects back into the active session.
+	 * But putting custom objects in the session is dodgy and something I would generally try to avoid.
+	 * To be able to do it you have to have defined the class in question before calling session_start;
+	 * if you don't, PHP's session handler won't know how to deserialise the instances of that class, and you'll
+	 * end up with the __PHP_Incomplete_Class Object.
+	 * @http://stackoverflow.com/questions/2010427/php-php-incomplete-class-object-with-my-session-data
+	 */
+	protected static function loadMessages($user_id, &$user_data) {
+		if (isset($user_data['messages'])) {
+			unset($user_data['messages']);
+		}
+
+		$all_messages = Default_MessagesModel::getAll(array(
+			'status'     => Const_Messages::STATUS_NEW,
+			'to_user_id' => $user_id,
+		));
+		$user_data['messages']['new'] = count($all_messages);
+	}
+
+	/**
+	 * @param       $user_id
+	 * @param array $attributes
+	 */
+	public static function injectRefresh($user_id, array $attributes) {
+		$cache_id = self::CACHE_INJECT_PREFIX . $user_id;
+		if (Core_Cache::get($cache_id)) {
+			$attributes = array_merge($attributes, Core_Cache::get($cache_id));
+		}
+		Core_Cache::set($cache_id, $attributes, 180);
 
 	}
 

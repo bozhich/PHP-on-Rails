@@ -5,6 +5,13 @@
  */
 class Core_Db extends PDO {
 
+	/**
+	 * @param        $host
+	 * @param        $user
+	 * @param        $pass
+	 * @param        $name
+	 * @param string $driver
+	 */
 	public function __construct($host, $user, $pass, $name, $driver = 'pgsql') {
 		try {
 			parent::__construct($driver . ':dbname=' . $name . ';host=' . $host, $user, $pass);
@@ -29,11 +36,15 @@ class Core_Db extends PDO {
 
 		$this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('Core_Db_Statement', array($this)));
 		if (cfg()->dev_mode) {
-			Core_Debug::getInstance()->initPdoDebug($this);
+//			Core_Debug::getInstance()->initPdoDebug($this);
 		}
 	}
 
 
+	/**
+	 * @param $query
+	 * @return Core_Db_Paging
+	 */
 	public function paging($query) {
 		return new Core_Db_Paging($this, $query);
 	}

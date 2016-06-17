@@ -5,16 +5,29 @@
  */
 class Core_Url extends Core_Singleton {
 	/**
+	 *
+	 */
+	const STRICT_LINK = 1;
+	/**
+	 *
+	 */
+	const ADD_CURRENT_QUERY = 2; // bool
+	/**
+	 *
+	 */
+	const ADD_QUERY = 3; // bool
+	/**
+	 *
+	 */
+	const SET_MODULE = 4; // array
+	/**
+	 *
+	 */
+	const DIRECT_REDIRECT = 5; // string
+	/**
 	 * @var Core_Request
 	 */
-	protected $request;
-
-	const STRICT_LINK = 1; // bool
-	const ADD_CURRENT_QUERY = 2; // bool
-	const ADD_QUERY = 3; // array
-	const SET_MODULE = 4; // string
-	const DIRECT_REDIRECT = 5; // bool
-
+	protected $request; // bool
 
 	/**
 	 *
@@ -23,6 +36,28 @@ class Core_Url extends Core_Singleton {
 		$this->request = Core_Request::getInstance();
 	}
 
+	/**
+	 * @param       $address
+	 * @param null  $code
+	 * @param array $options
+	 */
+	public function redirect($address, $code = null, array $options = array()) {
+		if (!isset($code)) {
+			$code = 302;
+		}
+
+		if (empty($options[self::DIRECT_REDIRECT])) {
+			$address = $this->getAddress($address, $options);
+		}
+		if ($this->request->isAjax()) {
+			//json
+			return Core_Response::getInstance()->redirect($address)->toJson();
+		}
+
+
+		header('Location: ' . $address, true, $code);
+		die();
+	}
 
 	/**
 	 * @param       $address
@@ -93,29 +128,5 @@ class Core_Url extends Core_Singleton {
 		}
 
 		return $address;
-	}
-
-
-	/**
-	 * @param       $address
-	 * @param null  $code
-	 * @param array $options
-	 */
-	public function redirect($address, $code = null, array $options = array()) {
-		if (!isset($code)) {
-			$code = 302;
-		}
-
-		if (empty($options[self::DIRECT_REDIRECT])) {
-			$address = $this->getAddress($address, $options);
-		}
-		if ($this->request->isAjax()) {
-			//json
-			return Core_Response::getInstance()->redirect($address)->toJson();
-		}
-
-
-		header('Location: ' . $address, true, $code);
-		die();
 	}
 }

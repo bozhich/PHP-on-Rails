@@ -4,16 +4,28 @@
  * Class Core_Request_Routes
  */
 class Core_Request_Routes extends Core_Singleton {
+	/**
+	 *
+	 */
 	const ROUTER_NAME = 'r';
 
+	/**
+	 * @var string
+	 */
 	protected static $server_router;
 
+	/**
+	 * @var array
+	 */
 	protected $default_scheme = array(
 		1 => array('name' => 'controller', 'empty_value' => 'index'),
 		2 => array('name' => 'action', 'empty_value' => 'index'),
 		3 => array('name' => 'id'),
 	);
 
+	/**
+	 * @var array
+	 */
 	protected $routes = array();
 
 
@@ -37,6 +49,12 @@ class Core_Request_Routes extends Core_Singleton {
 		$this->setRoutes($this->getDefaultScheme());
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getDefaultScheme() {
+		return $this->default_scheme;
+	}
 
 	/**
 	 * @param $var
@@ -46,7 +64,6 @@ class Core_Request_Routes extends Core_Singleton {
 		return (array_key_exists($var, $this->routes)) ? $this->routes[$var] : null;
 	}
 
-
 	/**
 	 * @param $route_id
 	 * @param $value
@@ -55,6 +72,12 @@ class Core_Request_Routes extends Core_Singleton {
 		$this->routes[$route_id] = $value;
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getRoutes() {
+		return $this->routes;
+	}
 
 	/**
 	 * @param $scheme
@@ -95,21 +118,5 @@ class Core_Request_Routes extends Core_Singleton {
 			$scheme_id = $scheme[$s_id]['name'];
 			$this->routes[$scheme_id] = $tmp_levels[$i];
 		}
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getRoutes() {
-		return $this->routes;
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getDefaultScheme() {
-		return $this->default_scheme;
 	}
 }

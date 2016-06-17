@@ -1,9 +1,16 @@
 <?php
 
+/**
+ * Class Migration_DumpController
+ */
 class Migration_DumpController extends Migration_ControllerHelper {
 
 
+	/**
+	 *
+	 */
 	public function indexAction() {
+		die('todo');
 		$overwrite = !is_null(Core_Request::getInstance()->getArgv(4)) ? Core_Request::getInstance()->getArgv(4) : false;
 
 		foreach (dibi::getDatabaseInfo()->getTables() as $table_data) {

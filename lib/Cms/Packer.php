@@ -1,6 +1,12 @@
 <?php
 
+/**
+ * Class Cms_Packer
+ */
 class Cms_Packer {
+	/**
+	 *
+	 */
 	const MINIFY_CMD = 'java -jar %1$scompiler.jar --js_output_file=%2$s --compilation_level SIMPLE --language_in ECMASCRIPT5 %3$s';
 
 	/**
@@ -11,13 +17,13 @@ class Cms_Packer {
 	 */
 	public static function js($hash_id, array $files) {
 		if (empty($files)) {
-			return;
+			return false;
 		}
 		if (cfg()->dev_mode) {
 			$scripts = null;
 			foreach ($files as $file) {
 				if (!file_exists(cfg()->static_path . 'js' . DS . $file)) {
-					throw new Exception('file ' . cfg()->static_path . $file . ' does not exist');
+					throw new Exception('file ' . cfg()->static_path . 'js' . DS . $file . ' does not exist');
 				}
 				$source = Core_Files::getContent(cfg()->static_path . 'js' . DS . $file);
 				$source = self::replaceLangTags($source);
@@ -59,19 +65,28 @@ class Cms_Packer {
 	}
 
 	/**
+	 * @param $source
+	 * @return mixed
+	 */
+	public static function replaceLangTags($source) {
+		return preg_replace_callback('/__\([\'|"](.*?)[\'|"][\)|,]/', array(__CLASS__, 'replaceLangTagsCallBack'), $source);
+	}
+
+	/**
 	 * @param       $hash_id
 	 * @param array $files
 	 * @return null|string
 	 */
 	public static function css($hash_id, array $files) {
 		if (empty($files)) {
-			return;
+			return false;
 		}
 		$cache_name = '';
 		foreach ($files as &$file) {
 			$file = cfg()->static_path . 'css' . DS . $file;
 			$cache_name .= Core_Files::fileSize($file);
 		}
+		unset($file);
 
 		$f_name = md5($hash_id . $cache_name) . '.css';
 		$f_path = cfg()->cache_path . 'css' . DS . $f_name;
@@ -101,16 +116,6 @@ class Cms_Packer {
 
 		return '<link type="text/css" rel="stylesheet" href="' . $f_public . '"/>';
 	}
-
-
-	/**
-	 * @param $source
-	 * @return mixed
-	 */
-	public static function replaceLangTags($source) {
-		return preg_replace_callback('/__\([\'|"](.*?)[\'|"][\)|,]/', array(__CLASS__, 'replaceLangTagsCallBack'), $source);
-	}
-
 
 	/**
 	 * @param $data

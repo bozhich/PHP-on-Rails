@@ -4,16 +4,34 @@
  * Class Core_Cfg
  */
 class Core_Cfg extends Core_Singleton {
+	/**
+	 *
+	 */
 	const MATCH_TYPE_DOMAIN = 1;
 
+	/**
+	 *
+	 */
 	const MATCH_TYPE_ID = 2;
 
+	/**
+	 *
+	 */
 	const DIRECTORY = 'cfg';
 
+	/**
+	 * @var null
+	 */
 	protected $id = null;
 
+	/**
+	 * @var null
+	 */
 	protected $partner_id = null;
 
+	/**
+	 * @var array
+	 */
 	protected $store = array();
 
 
@@ -104,6 +122,13 @@ class Core_Cfg extends Core_Singleton {
 		return (array_key_exists($var, $this->store)) ? $this->store[$var] : null;
 	}
 
+	/**
+	 * @param $var
+	 * @return null
+	 */
+	public function __set($var, $value) {
+		$this->store[$var] = $value;
+	}
 
 	/**
 	 * @return array
@@ -112,7 +137,6 @@ class Core_Cfg extends Core_Singleton {
 		return $this->store;
 	}
 
-
 	/**
 	 * @return null
 	 */
@@ -120,19 +144,10 @@ class Core_Cfg extends Core_Singleton {
 		return $this->id;
 	}
 
-
 	/**
 	 * @return null
 	 */
 	public function getPortalId() {
 		return $this->partner_id;
-	}
-
-	/**
-	 * @param $var
-	 * @return null
-	 */
-	public function __set($var, $value) {
-		$this->store[$var] = $value;
 	}
 }

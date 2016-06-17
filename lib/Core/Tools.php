@@ -75,13 +75,6 @@ class Core_Tools {
 	}
 
 	/* Core_Curl used */
-	/**
-	 * @param $array
-	 * @return bool
-	 */
-	public static function is_array_assoc($array) {
-		return (bool) count(array_filter(array_keys($array), 'is_string'));
-	}
 
 	/**
 	 * @param $array
@@ -122,7 +115,18 @@ class Core_Tools {
 		return implode('&', $query);
 	}
 
+	/**
+	 * @param $array
+	 * @return bool
+	 */
+	public static function is_array_assoc($array) {
+		return (bool) count(array_filter(array_keys($array), 'is_string'));
+	}
 
+	/**
+	 * @param $bytes
+	 * @return float
+	 */
 	public static function formatSize($bytes) {
 		$types = array('B', 'KB', 'MB', 'GB', 'TB');
 		for ($i = 0; $bytes >= 1024 && $i < (count($types) - 1); $bytes /= 1024, $i++) ;
@@ -131,6 +135,12 @@ class Core_Tools {
 		return (round($bytes, 2));
 	}
 
+	/**
+	 * @param     $from
+	 * @param     $total
+	 * @param int $precision
+	 * @return float|int
+	 */
 	public static function calculatePercent($from, $total, $precision = 2) {
 		if ($from == 0 || $total == 0) {
 			return 0;

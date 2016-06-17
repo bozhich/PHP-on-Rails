@@ -1,6 +1,12 @@
 <?php
 
+/**
+ * Class Migration_CreateController
+ */
 class Migration_CreateController extends Core_Controller {
+	/**
+	 * @throws Exception
+	 */
 	public function indexAction() {
 		$migration_time = time();
 		$migration_name = time();

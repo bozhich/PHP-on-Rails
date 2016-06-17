@@ -78,8 +78,17 @@ class SMTP {
 	// PROPERTIES, PRIVATE AND PROTECTED
 	/////////////////////////////////////////////////
 
+	/**
+	 * @var int
+	 */
 	private $smtp_conn; // the socket to the server
+	/**
+	 * @var null
+	 */
 	private $error;     // error if any on the last call
+	/**
+	 * @var null
+	 */
 	private $helo_rply; // the reply the server sent to us for HELO
 
 	/**
@@ -162,6 +171,76 @@ class SMTP {
 	}
 
 	/**
+	 * Returns true if connected to a server otherwise false
+	 * @access public
+	 * @return bool
+	 */
+	public function Connected() {
+		if (!empty($this->smtp_conn)) {
+			$sock_status = socket_get_status($this->smtp_conn);
+			if ($sock_status["eof"]) {
+				// the socket is valid but we are not connected
+				if ($this->do_debug >= 1) {
+					echo "SMTP -> NOTICE:" . $this->CRLF . "EOF caught while checking if connected";
+				}
+				$this->Close();
+
+				return false;
+			}
+
+			return true; // everything looks good
+		}
+
+		return false;
+	}
+
+	/**
+	 * Closes the socket and cleans up the state of the class.
+	 * It is not considered good to use this function without
+	 * first trying to use QUIT.
+	 * @access public
+	 * @return void
+	 */
+	public function Close() {
+		$this->error = null; // so there is no confusion
+		$this->helo_rply = null;
+		if (!empty($this->smtp_conn)) {
+			// close the connection and cleanup
+			fclose($this->smtp_conn);
+			$this->smtp_conn = 0;
+		}
+	}
+
+	/**
+	 * Read in as many lines as possible
+	 * either before eof or socket timeout occurs on the operation.
+	 * With SMTP we can tell if we have more lines to read if the
+	 * 4th character is '-' symbol. If it is a space then we don't
+	 * need to read anything else.
+	 * @access private
+	 * @return string
+	 */
+	private function get_lines() {
+		$data = "";
+		while ($str = @fgets($this->smtp_conn, 515)) {
+			if ($this->do_debug >= 4) {
+				echo "SMTP -> get_lines(): \$data was \"$data\"" . $this->CRLF . '<br />';
+				echo "SMTP -> get_lines(): \$str is \"$str\"" . $this->CRLF . '<br />';
+			}
+			$data .= $str;
+			if ($this->do_debug >= 4) {
+				echo "SMTP -> get_lines(): \$data is \"$data\"" . $this->CRLF . '<br />';
+			}
+			// if 4th character is a space, we are done reading, break the loop
+			if (substr($str, 3, 1) == " ") {
+				break;
+			}
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Initiate a TLS communication with the server.
 	 *
 	 * SMTP CODE 220 Ready to start TLS
@@ -207,6 +286,10 @@ class SMTP {
 
 		return true;
 	}
+
+	/////////////////////////////////////////////////
+	// SMTP COMMANDS
+	/////////////////////////////////////////////////
 
 	/**
 	 * Performs SMTP authentication.  Must be run after running the
@@ -268,51 +351,6 @@ class SMTP {
 
 		return true;
 	}
-
-	/**
-	 * Returns true if connected to a server otherwise false
-	 * @access public
-	 * @return bool
-	 */
-	public function Connected() {
-		if (!empty($this->smtp_conn)) {
-			$sock_status = socket_get_status($this->smtp_conn);
-			if ($sock_status["eof"]) {
-				// the socket is valid but we are not connected
-				if ($this->do_debug >= 1) {
-					echo "SMTP -> NOTICE:" . $this->CRLF . "EOF caught while checking if connected";
-				}
-				$this->Close();
-
-				return false;
-			}
-
-			return true; // everything looks good
-		}
-
-		return false;
-	}
-
-	/**
-	 * Closes the socket and cleans up the state of the class.
-	 * It is not considered good to use this function without
-	 * first trying to use QUIT.
-	 * @access public
-	 * @return void
-	 */
-	public function Close() {
-		$this->error = null; // so there is no confusion
-		$this->helo_rply = null;
-		if (!empty($this->smtp_conn)) {
-			// close the connection and cleanup
-			fclose($this->smtp_conn);
-			$this->smtp_conn = 0;
-		}
-	}
-
-	/////////////////////////////////////////////////
-	// SMTP COMMANDS
-	/////////////////////////////////////////////////
 
 	/**
 	 * Issues a data command and sends the msg_data to the server
@@ -798,6 +836,10 @@ class SMTP {
 		return false;
 	}
 
+	/////////////////////////////////////////////////
+	// INTERNAL FUNCTIONS
+	/////////////////////////////////////////////////
+
 	/**
 	 * Get the current error
 	 * @access public
@@ -805,39 +847,6 @@ class SMTP {
 	 */
 	public function getError() {
 		return $this->error;
-	}
-
-	/////////////////////////////////////////////////
-	// INTERNAL FUNCTIONS
-	/////////////////////////////////////////////////
-
-	/**
-	 * Read in as many lines as possible
-	 * either before eof or socket timeout occurs on the operation.
-	 * With SMTP we can tell if we have more lines to read if the
-	 * 4th character is '-' symbol. If it is a space then we don't
-	 * need to read anything else.
-	 * @access private
-	 * @return string
-	 */
-	private function get_lines() {
-		$data = "";
-		while ($str = @fgets($this->smtp_conn, 515)) {
-			if ($this->do_debug >= 4) {
-				echo "SMTP -> get_lines(): \$data was \"$data\"" . $this->CRLF . '<br />';
-				echo "SMTP -> get_lines(): \$str is \"$str\"" . $this->CRLF . '<br />';
-			}
-			$data .= $str;
-			if ($this->do_debug >= 4) {
-				echo "SMTP -> get_lines(): \$data is \"$data\"" . $this->CRLF . '<br />';
-			}
-			// if 4th character is a space, we are done reading, break the loop
-			if (substr($str, 3, 1) == " ") {
-				break;
-			}
-		}
-
-		return $data;
 	}
 
 }

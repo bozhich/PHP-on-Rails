@@ -1,25 +1,54 @@
 <?php
 
+/**
+ * Class Core_Db_Paging
+ */
 class Core_Db_Paging {
+	/**
+	 * @var Core_Db
+	 */
 	protected $db;
 
+	/**
+	 * @var
+	 */
 	protected $query;
 
+	/**
+	 * @var
+	 */
 	protected $statement;
 
+	/**
+	 * @var
+	 */
 	protected $per_page;
 
+	/**
+	 * @var
+	 */
 	protected $current_page;
 
+	/**
+	 * @var bool
+	 */
 	protected $dump_mode = false;
 
 
+	/**
+	 * @param Core_Db $db
+	 * @param         $query
+	 */
 	public function __construct(Core_Db $db, $query) {
 		$this->db = $db;
 		$this->query = $query;
 	}
 
 
+	/**
+	 * @param $per_page
+	 * @param $current_page
+	 */
 	public function limits($per_page, $current_page) {
 		$this->per_page = (int) $per_page;
 		$this->current_page = (int) $current_page;
@@ -34,11 +63,18 @@ class Core_Db_Paging {
 	}
 
 
+	/**
+	 *
+	 */
 	public function setDumpMode() {
 		$this->dump_mode = true;
 	}
 
 
+	/**
+	 * @param array $input_parameters
+	 * @return array
+	 */
 	public function get(array $input_parameters = array()) {
 		// Calculate total results
 		$stm_count = $this->db->prepare('SELECT COUNT(*) AS "cnt" FROM (' . $this->query . ') AS "rs"');

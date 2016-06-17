@@ -4,9 +4,21 @@
  * Class Core_Server
  */
 class Core_Server {
+	/**
+	 *
+	 */
 	const LOAD_FILE = '/proc/loadavg';
+	/**
+	 *
+	 */
 	const CRITICAL_LOAD = 10;
 
+	/**
+	 * @return bool
+	 */
+	public static function isCriticalLoad() {
+		return self::getLoad() > self::CRITICAL_LOAD;
+	}
 
 	/**
 	 * @return array|bool|string
@@ -21,13 +33,5 @@ class Core_Server {
 		}
 
 		return Core_Cache::get('server_load');
-	}
-
-
-	/**
-	 * @return bool
-	 */
-	public static function isCriticalLoad() {
-		return self::getLoad() > self::CRITICAL_LOAD;
 	}
 }

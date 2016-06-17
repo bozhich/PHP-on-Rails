@@ -1,22 +1,41 @@
 <?php
 
+/**
+ * Class Core_Db_Statement
+ */
 class Core_Db_Statement extends PDOStatement {
+	/**
+	 * @var Core_Db
+	 */
 	protected $db;
 
+	/**
+	 * @var bool
+	 */
 	protected $dump_mode = false;
 
 
+	/**
+	 * @param Core_Db $db
+	 */
 	protected function __construct(Core_Db $db) {
 		$this->db = $db;
-		$this->setFetchMode(PDO::FETCH_ASSOC);
+		$this->setFetchMode(PDO::FETCH_OBJ);
 	}
 
 
+	/**
+	 *
+	 */
 	public function dump() {
 		$this->dump_mode = true;
 	}
 
 
+	/**
+	 * @param null $input_parameters
+	 * @return bool
+	 */
 	public function execute($input_parameters = null) {
 		// Bool PDO bug
 		if (is_array($input_parameters)) {
@@ -31,7 +50,7 @@ class Core_Db_Statement extends PDOStatement {
 			$dump_sql = $this->queryString;
 			if (is_array($input_parameters)) {
 				foreach ($input_parameters as $param => $value) {
-					$dump_sql = str_replace(':' . $param, '<strong><i>' . $value . '</i></strong>', $dump_sql);
+					$dump_sql = str_replace(':' . $param, '\'<strong><i>' . $value . '</i></strong>\'', $dump_sql);
 				}
 			}
 			print '<pre>' . $dump_sql . '</pre>';
@@ -42,7 +61,8 @@ class Core_Db_Statement extends PDOStatement {
 
 			$result = parent::execute($input_parameters);
 
-			Core_Db_Log::log($this->queryString, $input_parameters, $start_time);
+			//@todo - 2nd PDO instance
+//			Core_Db_Log::log($this->queryString, $input_parameters, $start_time);
 		} catch (Exception $e) {
 			Core_ErrorLog::save(Core_ErrorLog::TYPE_DB, $e->getMessage());
 			p404($e->getMessage(), 'dbError');

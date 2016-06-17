@@ -23,13 +23,6 @@ class Admin_BootstrapHelper extends Core_Bootstrap {
 	/**
 	 *
 	 */
-	protected function initDb() {
-		Core_Db::init(cfg()->db_data);
-	}
-
-	/**
-	 *
-	 */
 	protected function initView() {
 		$this->view = Core_View::getInstance();
 		$this->view->addHelper(new Admin_View_BaseHelper());
@@ -44,7 +37,7 @@ class Admin_BootstrapHelper extends Core_Bootstrap {
 	protected function singleSession() {
 		if (!cfg()->dev_mode) {
 			if (s()->user->id) {
-				$user_data = Admin_UsersModel::get(array(
+				$user_data = Admin_UsersModel::getInstance()->get(array(
 					'id' => s()->user->id,
 				));
 
@@ -55,22 +48,6 @@ class Admin_BootstrapHelper extends Core_Bootstrap {
 		}
 	}
 
-	/**
-	 *
-	 */
-
-	protected function initDebug() {
-		if (class_exists('NDebugger')) {
-			NDebugger::enable(NDebugger::DETECT, cfg()->error_path, cfg()->mail_user);
-			//NDebugger::$logDirectory = cfg()->error_path;
-			NDebugger::$strictMode = true;
-		} else {
-			Tracy\Debugger::enable(constant(cfg()->enviroment));
-		}
-	}
-
-
-
 
 	/**
 	 *
@@ -79,15 +56,14 @@ class Admin_BootstrapHelper extends Core_Bootstrap {
 		$key = 'web_versions';
 		$versions_rs = Core_Cache::get($key);
 		if (!$versions_rs) {
-			$versions_rs = Admin_VersionsModel::getAll(array());
+			/**
+			 * @var $versions_model Admin_VersionsModel
+			 */
+			$versions_model = Admin_VersionsModel::getInstance();
+			$versions_rs = $versions_model->get();
 			Core_Cache::set($key, $versions_rs, 5000);
 		}
 		foreach ($versions_rs as $key => $version_row) {
-//			if ($version_row['name'] == $this->getRequest()->getRoute('version')) {
-//				s()->version->current = $version_row;
-//				unset($versions_rs[$key]);
-//				break;
-//			}
 			if (cfg()->dev_mode && $version_row['is_dev']) {
 				s()->version->current = $version_row;
 				break;

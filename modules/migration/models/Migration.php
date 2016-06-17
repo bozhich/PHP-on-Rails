@@ -1,6 +1,12 @@
 <?php
 
+/**
+ * Class Migration_MigrationModel
+ */
 class Migration_MigrationModel extends Core_Model {
+	/**
+	 * @var string
+	 */
 	protected static $table = 'migrations';
 
 	/**
@@ -26,15 +32,6 @@ class Migration_MigrationModel extends Core_Model {
 		return $this->query($query);
 	}
 
-	public function checkSelfTable() {
-		if (cfg()->db_driver == 'pgsql') {
-			list($schema, $table) = explode('.', self::$table);
-		} else {
-			list($schema, $table) = array('.', self::$table);
-		}
-		return $this->checkTableExist($schema, $table);
-	}
-
 	/**
 	 * This is only used in migrations - that's why it's placed ONLY here!
 	 * Do not use it for ANY other reasons.
@@ -43,5 +40,18 @@ class Migration_MigrationModel extends Core_Model {
 	 */
 	public function query($query) {
 		return $this->getDb()->query($query)->execute();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function checkSelfTable() {
+		if (cfg()->db_driver == 'pgsql') {
+			list($schema, $table) = explode('.', self::$table);
+		} else {
+			list($schema, $table) = array('.', self::$table);
+		}
+
+		return $this->checkTableExist($schema, $table);
 	}
 }

@@ -5,9 +5,19 @@
  */
 class Cms_Captcha extends Core_Singleton {
 
+	/**
+	 *
+	 */
 	const SECRET = 'XX';
+	/**
+	 *
+	 */
 	const SITE_KEY = 'YY';
 
+	/**
+	 * @param $captcha
+	 * @return mixed
+	 */
 	public static function check($captcha) {
 		$curl = curl_init();
 		$fields = array(
@@ -37,4 +47,5 @@ class Cms_Captcha extends Core_Singleton {
 
 		return $resp['success'];
 	}
+
 }

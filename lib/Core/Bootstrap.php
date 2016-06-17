@@ -25,6 +25,9 @@ class Core_Bootstrap {
 		return Core_Request::getInstance();
 	}
 
+	/**
+	 * @return mixed
+	 */
 	final public function getView() {
 		return Core_View::getInstance();
 	}

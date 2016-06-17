@@ -4,15 +4,33 @@
  */
 class Cms_Timer {
 	// command constants
+	/**
+	 *
+	 */
 	const CMD_START = 'start';
+	/**
+	 *
+	 */
 	const CMD_STOP = 'end';
 
 	// return format constants
+	/**
+	 *
+	 */
 	const SECONDS = 0;
+	/**
+	 *
+	 */
 	const MILLISECONDS = 1;
+	/**
+	 *
+	 */
 	const MICROSECONDS = 2;
 
 	// number of microseconds in a second
+	/**
+	 *
+	 */
 	const USECDIV = 1000000;
 
 
@@ -40,29 +58,6 @@ class Cms_Timer {
 		// push current time
 		self::_pushTime(self::CMD_START);
 	}
-
-
-	/**
-	 * Stop the timer
-	 *
-	 * @return void
-	 */
-	public static function stop() {
-		// push current time
-		self::_pushTime(self::CMD_STOP);
-	}
-
-
-	/**
-	 * Reset contents of the queue
-	 *
-	 * @return void
-	 */
-	public static function reset() {
-		// reset the queue
-		self::$_queue = array();
-	}
-
 
 	/**
 	 * Add a time entry to the queue
@@ -136,6 +131,53 @@ class Cms_Timer {
 		}
 	}
 
+	/**
+	 * Reset contents of the queue
+	 *
+	 * @return void
+	 */
+	public static function reset() {
+		// reset the queue
+		self::$_queue = array();
+	}
+
+	/**
+	 * Get the average time of execution from all queue entries
+	 *
+	 * @param int $format Format of the returned data
+	 * @return float
+	 */
+	public static function getAverage($format = self::SECONDS) {
+		$count = count(self::$_queue);
+		$sec = 0;
+		$usec = self::get(self::MICROSECONDS);
+
+		if ($usec > self::USECDIV) {
+			// move the full second microseconds to the seconds' part
+			$sec += (int) floor($usec / self::USECDIV);
+
+			// keep only the microseconds that are over the self::USECDIV
+			$usec = $usec % self::USECDIV;
+		}
+
+		switch ($format) {
+			case self::MICROSECONDS:
+				$value = ($sec * self::USECDIV) + $usec;
+
+				return round($value / $count, 2);
+
+			case self::MILLISECONDS:
+				$value = ($sec * 1000) + (int) round($usec / 1000, 0);
+
+				return round($value / $count, 2);
+
+			case self::SECONDS:
+			default:
+				$value = (float) $sec + (float) ($usec / self::USECDIV);
+
+				return round($value / $count, 2);
+		}
+	}
 
 	/**
 	 * Get time of execution from all queue entries
@@ -198,43 +240,14 @@ class Cms_Timer {
 		}
 	}
 
-
 	/**
-	 * Get the average time of execution from all queue entries
+	 * Stop the timer
 	 *
-	 * @param int $format Format of the returned data
-	 * @return float
+	 * @return void
 	 */
-	public static function getAverage($format = self::SECONDS) {
-		$count = count(self::$_queue);
-		$sec = 0;
-		$usec = self::get(self::MICROSECONDS);
-
-		if ($usec > self::USECDIV) {
-			// move the full second microseconds to the seconds' part
-			$sec += (int) floor($usec / self::USECDIV);
-
-			// keep only the microseconds that are over the self::USECDIV
-			$usec = $usec % self::USECDIV;
-		}
-
-		switch ($format) {
-			case self::MICROSECONDS:
-				$value = ($sec * self::USECDIV) + $usec;
-
-				return round($value / $count, 2);
-
-			case self::MILLISECONDS:
-				$value = ($sec * 1000) + (int) round($usec / 1000, 0);
-
-				return round($value / $count, 2);
-
-			case self::SECONDS:
-			default:
-				$value = (float) $sec + (float) ($usec / self::USECDIV);
-
-				return round($value / $count, 2);
-		}
+	public static function stop() {
+		// push current time
+		self::_pushTime(self::CMD_STOP);
 	}
 
 }

@@ -43,14 +43,14 @@ class Default_BootstrapHelper extends Core_Bootstrap {
 			$cookie_token = $this->getRequest()->getCookie(Core_Session::NAME_PERSISTENT);
 			// find a user with this token
 			if ($cookie_token) {
-			/*	$users_module  = Default_PlayersModel::getInstance();
-				$user_rs = $users_module->get(array(
-					'token' => $cookie_token,
-				));
-				if ($user_rs) {
-					// refreshing persistent login
-					Default_PlayersHelper::login($user_rs->id, true);
-				}*/
+				/*	$users_module  = Default_PlayersModel::getInstance();
+					$user_rs = $users_module->get(array(
+						'token' => $cookie_token,
+					));
+					if ($user_rs) {
+						// refreshing persistent login
+						Default_PlayersHelper::login($user_rs->id, true);
+					}*/
 			}
 		}
 	}
@@ -61,14 +61,24 @@ class Default_BootstrapHelper extends Core_Bootstrap {
 	 */
 	protected function getMigrationStatistics() {
 		if (cfg()->dev_mode) {
-			$migration_stats = Core_Migration_Factory::check(true);
-			Core_Debug::getInstance()->getBar()->addCollector(new DebugBar\DataCollector\MessagesCollector('Migrations'));
-			if (count($migration_stats) > 0) {
-				Core_Debug::getInstance()->getBar()['Migrations']->info('php ' . cfg()->root_path . 'index.php ' . cfg()->getId() . ' migration update');
-				Core_Debug::getInstance()->getBar()['Migrations']->info($migration_stats);
-			} else {
-				Core_Debug::getInstance()->getBar()['Migrations']->info('Up to date');
-			}
+//			$migration_stats = Core_Migration_Factory::check(true);
+//			Core_Debug::getInstance()->getBar()->addCollector(new DebugBar\DataCollector\MessagesCollector('Migrations'));
+//			if (count($migration_stats) > 0) {
+//				Core_Debug::getInstance()->getBar()['Migrations']->info('php ' . cfg()->root_path . 'index.php ' . cfg()->getId() . ' migration update');
+//				Core_Debug::getInstance()->getBar()['Migrations']->info($migration_stats);
+//			} else {
+//				Core_Debug::getInstance()->getBar()['Migrations']->info('Up to date');
+//			}
+		}
+	}
+
+	protected function setUpKint() {
+		if (class_exists('Kint')) {
+			Kint::$cliDetection = true;
+			Kint::$maxLevels = 10;
+			Kint::$theme = 'aante-light';
+			Kint::$displayCalledFrom = true;
+			Kint::enabled(Kint::MODE_RICH);
 		}
 	}
 }

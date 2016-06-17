@@ -16,7 +16,8 @@ class Admin_PermissionsHelper {
 			'controller' => $request->getRoute('controller'),
 			'action'     => $request->getRoute('action'),
 		);
-		$flag = Admin_PermissionsModel::getFlag($data);
+		$model = Admin_PermissionsModel::getInstance();
+		$flag = $model->getFlag($data);
 
 		// $flag = 0 - is a free acces of the page
 		if ($flag === 0) {
@@ -25,7 +26,7 @@ class Admin_PermissionsHelper {
 
 		if (!$flag) {
 			// we need to check that method exist
-			Admin_PermissionsModel::add($data);
+			$model->add($data);
 		} else {
 			if (!s()->user->id) {
 				// @todo

@@ -80,11 +80,6 @@ class Core_Session extends Core_Singleton {
 		return $this->registries[$namespace];
 	}
 
-	public function __isset($namespace) {
-		return isset($this->registries[$namespace]);
-	}
-
-
 	/**
 	 * @param $var
 	 * @param $value
@@ -94,6 +89,13 @@ class Core_Session extends Core_Singleton {
 		throw new Exception('You can`t set namespace values');
 	}
 
+	/**
+	 * @param $namespace
+	 * @return bool
+	 */
+	public function __isset($namespace) {
+		return isset($this->registries[$namespace]);
+	}
 
 	/**
 	 * @param $namespace

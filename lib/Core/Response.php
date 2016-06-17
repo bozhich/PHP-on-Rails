@@ -1,43 +1,38 @@
 <?php
 
+/**
+ * Class Core_Response
+ */
 class Core_Response extends Core_Singleton {
 
+	/**
+	 * @var
+	 */
 	protected $status;
+	/**
+	 * @var
+	 */
 	protected $data;
+	/**
+	 * @var
+	 */
 	protected $body;
+	/**
+	 * @var
+	 */
 	protected $redirect;
 
 	/**
-	 * @return mixed
+	 *
 	 */
-	public function getBody() {
-		return $this->body;
-	}
-
-	/**
-	 * @param mixed $body
-	 * @return Core_Response
-	 */
-	public function setBody($body) {
-		$this->body = $body;
-
-		return $this;
-	}
-	/**
-	 * @return mixed
-	 */
-	public function getData() {
-		return $this->data;
-	}
-
-	/**
-	 * @param mixed $data
-	 * @return Core_Response
-	 */
-	public function setData($data) {
-		$this->data = $data;
-
-		return $this;
+	public function toJson() {
+		$response = array(
+			'status' => $this->getStatus(),
+			'data'   => $this->getData(),
+			'body'   => $this->getBody()
+		);
+		echo json_encode($response);
+		die;
 	}
 
 	/**
@@ -58,16 +53,37 @@ class Core_Response extends Core_Singleton {
 	}
 
 	/**
-	 *
+	 * @return mixed
 	 */
-	public function toJson() {
-		$response = array(
-			'status' => $this->getStatus(),
-			'data'   => $this->getData(),
-			'body'   => $this->getBody()
-		);
-		echo json_encode($response);
-		die;
+	public function getData() {
+		return $this->data;
+	}
+
+	/**
+	 * @param mixed $data
+	 * @return Core_Response
+	 */
+	public function setData($data) {
+		$this->data = $data;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getBody() {
+		return $this->body;
+	}
+
+	/**
+	 * @param mixed $body
+	 * @return Core_Response
+	 */
+	public function setBody($body) {
+		$this->body = $body;
+
+		return $this;
 	}
 
 	/**

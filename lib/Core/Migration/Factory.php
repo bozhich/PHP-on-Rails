@@ -1,11 +1,26 @@
 <?php
 
+/**
+ * Class Core_Migration_Factory
+ */
 class Core_Migration_Factory {
 
+	/**
+	 *
+	 */
 	const MIGRATION_PREFIX = 'Migration_';
+	/**
+	 *
+	 */
 	const MIGRATION_SUFIX = 'File';
+	/**
+	 *
+	 */
 	const TEMPLATE_NAME = 'Template.php';
 
+	/**
+	 *
+	 */
 	public static function update() {
 		$must_migrate = false;
 		$migrations_list = array();
@@ -44,6 +59,10 @@ class Core_Migration_Factory {
 	}
 
 
+	/**
+	 * @param bool $return
+	 * @return array
+	 */
 	public static function check($return = false) {
 		$must_migrate = false;
 		$return_data = array();

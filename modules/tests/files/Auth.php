@@ -1,7 +1,13 @@
 <?php
 
+/**
+ * Class Tests_AuthFile
+ */
 class Tests_AuthFile extends PHPUnit_Framework_TestCase {
 
+	/**
+	 *
+	 */
 	public function testInvaludLogin() {
 		/* @var $curl Core_Curl */
 		$curl = Core_Curl::getInstance();
@@ -17,6 +23,9 @@ class Tests_AuthFile extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(0, $response->status);
 	}
 
+	/**
+	 *
+	 */
 	public function testValidLogin() {
 		/* @var $curl Core_Curl */
 		$curl = Core_Curl::getInstance();

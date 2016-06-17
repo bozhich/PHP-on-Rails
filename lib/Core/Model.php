@@ -1,6 +1,12 @@
 <?php
 
+/**
+ * Class Core_Model
+ */
 abstract class Core_Model extends Core_Singleton {
+	/**
+	 * @var bool
+	 */
 	protected static $table = false;
 
 	/**
@@ -9,47 +15,14 @@ abstract class Core_Model extends Core_Singleton {
 	private static $db;
 
 
+	/**
+	 *
+	 */
 	public function __construct() {
 		if (!isset(self::$db)) {
-			self::$db = new Core_Db(cfg()->db_host, cfg()->db_user, cfg()->db_pass, cfg()->db_name, cfg()->db_driver);
+			self::$db = new Core_Db(cfg()->db_data['host'], cfg()->db_data['user'], cfg()->db_data['pass'], cfg()->db_data['db'], cfg()->db_data['driver']);
 		}
 	}
-
-	/**
-	 * @return Core_Db
-	 */
-	public function getDb() {
-		return self::$db;
-	}
-
-
-	/**
-	 * @param       $table
-	 * @param array $data
-	 * @param array $where
-	 * @return int affected rows
-	 */
-	protected function sqlSet($table, array $data, array $where) {
-		$binds = array();
-		$sql = 'UPDATE ' . $table . ' SET ';
-		foreach ($data as $field => $value) {
-			$sql .= '"' . $field . '" = :' . $field . ', ';
-			$binds[$field] = $value;
-		}
-		$sql = substr($sql, 0, -2);
-		$sql .= ' WHERE ';
-		foreach ($where as $field => $value) {
-			$sql .= '"' . $field . '" = :' . $field . ' AND ';
-			$binds[$field] = $value;
-		}
-		$sql = substr($sql, 0, -5);
-
-		$stm = $this->getDb()->prepare($sql);
-		$stm->execute($binds);
-
-		return $stm->rowCount();
-	}
-
 
 	/**
 	 * @param array $data
@@ -63,7 +36,8 @@ abstract class Core_Model extends Core_Singleton {
 		$cols = array();
 		$vals = array();
 		foreach ($data as $col => $val) {
-			$cols[] = $this->quoteIdentifier($col, true);
+//			$cols[] = $this->quoteIdentifier($col, true);
+			$cols[] = $col;
 			$vals[] = ':' . $col;
 		}
 		// build the statement
@@ -76,17 +50,12 @@ abstract class Core_Model extends Core_Singleton {
 		$stm->execute($data);
 	}
 
-
 	/**
-	 * @param $value
-	 * @return string
+	 * @return Core_Db
 	 */
-	protected function quoteIdentifier($value) {
-		$q = '"';
-
-		return ($q . str_replace("$q", "$q$q", $value) . $q);
+	public function getDb() {
+		return self::$db;
 	}
-
 
 	/**
 	 * @param int $length
@@ -111,7 +80,6 @@ abstract class Core_Model extends Core_Singleton {
 
 		return $stm->fetchColumn();
 	}
-
 
 	/**
 	 * @param $schema
@@ -160,10 +128,74 @@ abstract class Core_Model extends Core_Singleton {
 			$query .= ' AND ' . $this->quoteIdentifier($col) . ' = :' . $col;
 			$params[$col] = $val;
 		}
+
 		$stm = $this->getDb()->prepare($query);
 		$stm->execute($params);
 
+		return $stm->fetch();
+	}
+
+	/**
+	 * @param $value
+	 * @return string
+	 */
+	protected function quoteIdentifier($value) {
+		$q = '"';
+
+		return ($q . str_replace("$q", "$q$q", $value) . $q);
+	}
+
+	/**
+	 * @param array $where
+	 * @param array $select
+	 * @return array
+	 */
+	public function getAll($where = array(), $select = array('*'), $table = false) {
+		if (!$table) {
+			$table = static::$table;
+		}
+
+		$query = "SELECT " . implode(',', $select) . "
+				    FROM
+						" . $table . "
+					WHERE 1 = 1";
+
+		$params = array();
+		foreach ($where as $col => $val) {
+			$query .= ' AND ' . $this->quoteIdentifier($col) . ' = :' . $col;
+			$params[$col] = $val;
+		}
+
+		$stm = $this->getDb()->prepare($query);
+		$stm->execute($params);
 		return $stm->fetchAll();
+	}
+
+	/**
+	 * @param       $table
+	 * @param array $data
+	 * @param array $where
+	 * @return int affected rows
+	 */
+	protected function sqlSet($table, array $data, array $where) {
+		$binds = array();
+		$sql = 'UPDATE ' . $table . ' SET ';
+		foreach ($data as $field => $value) {
+			$sql .= '"' . $field . '" = :' . $field . ', ';
+			$binds[$field] = $value;
+		}
+		$sql = substr($sql, 0, -2);
+		$sql .= ' WHERE ';
+		foreach ($where as $field => $value) {
+			$sql .= '"' . $field . '" = :' . $field . ' AND ';
+			$binds[$field] = $value;
+		}
+		$sql = substr($sql, 0, -5);
+
+		$stm = $this->getDb()->prepare($sql);
+		$stm->execute($binds);
+
+		return $stm->rowCount();
 	}
 }
 

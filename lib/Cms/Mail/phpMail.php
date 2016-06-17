@@ -1,8 +1,17 @@
 <?php
 require_once("class.phpmailer.php");
 
+/**
+ * Class Cms_Mail_phpMail
+ */
 class Cms_Mail_phpMail {
 
+	/**
+	 * @param $data
+	 * @return bool|string
+	 * @throws Exception
+	 * @throws phpmailerException
+	 */
 	public static function send($data) {
 		$mail = new PHPMailer();
 

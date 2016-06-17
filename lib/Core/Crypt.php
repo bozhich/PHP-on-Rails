@@ -4,8 +4,14 @@
  * Class Core_Crypt
  */
 class Core_Crypt {
+	/**
+	 *
+	 */
 	const ADDITIONAL_KEY = 'CHUCK_NORRIS';
 
+	/**
+	 *
+	 */
 	const SALT_LENGTH = 10;
 
 

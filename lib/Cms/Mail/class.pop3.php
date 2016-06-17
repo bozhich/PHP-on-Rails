@@ -120,8 +120,17 @@ class POP3 {
 	// PROPERTIES, PRIVATE AND PROTECTED
 	/////////////////////////////////////////////////
 
+	/**
+	 * @var int
+	 */
 	private $pop_conn;
+	/**
+	 * @var bool
+	 */
 	private $connected;
+	/**
+	 * @var null
+	 */
 	private $error;     //  Error log array
 
 	/**
@@ -266,6 +275,62 @@ class POP3 {
 	}
 
 	/**
+	 * If debug is enabled, display the error message array
+	 * @access private
+	 */
+	private function displayErrors() {
+		echo '<pre>';
+
+		foreach ($this->error as $single_error) {
+			print_r($single_error);
+		}
+
+		echo '</pre>';
+	}
+
+	/**
+	 * Get the socket response back.
+	 * $size is the maximum number of bytes to retrieve
+	 * @access private
+	 * @param integer $size
+	 * @return string
+	 */
+	private function getResponse($size = 128) {
+		$pop3_response = fgets($this->pop_conn, $size);
+
+		return $pop3_response;
+	}
+
+	/////////////////////////////////////////////////
+	//  Private Methods
+	/////////////////////////////////////////////////
+
+	/**
+	 * Checks the POP3 server response for +OK or -ERR
+	 * @access private
+	 * @param string $string
+	 * @return boolean
+	 */
+	private function checkResponse($string) {
+		if (substr($string, 0, 3) !== '+OK') {
+			$this->error = array(
+				'error'  => "Server reported an error: $string",
+				'errno'  => 0,
+				'errstr' => ''
+			);
+
+			if ($this->do_debug >= 1) {
+				$this->displayErrors();
+			}
+
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
+	/**
 	 * Login to the POP3 server (does not support APOP yet)
 	 * @access public
 	 * @param string $username
@@ -312,33 +377,6 @@ class POP3 {
 	}
 
 	/**
-	 * Disconnect from the POP3 server
-	 * @access public
-	 */
-	public function Disconnect() {
-		$this->sendString('QUIT');
-
-		fclose($this->pop_conn);
-	}
-
-	/////////////////////////////////////////////////
-	//  Private Methods
-	/////////////////////////////////////////////////
-
-	/**
-	 * Get the socket response back.
-	 * $size is the maximum number of bytes to retrieve
-	 * @access private
-	 * @param integer $size
-	 * @return string
-	 */
-	private function getResponse($size = 128) {
-		$pop3_response = fgets($this->pop_conn, $size);
-
-		return $pop3_response;
-	}
-
-	/**
 	 * Send a string down the open socket connection to the POP3 server
 	 * @access private
 	 * @param string $string
@@ -351,42 +389,13 @@ class POP3 {
 	}
 
 	/**
-	 * Checks the POP3 server response for +OK or -ERR
-	 * @access private
-	 * @param string $string
-	 * @return boolean
+	 * Disconnect from the POP3 server
+	 * @access public
 	 */
-	private function checkResponse($string) {
-		if (substr($string, 0, 3) !== '+OK') {
-			$this->error = array(
-				'error'  => "Server reported an error: $string",
-				'errno'  => 0,
-				'errstr' => ''
-			);
+	public function Disconnect() {
+		$this->sendString('QUIT');
 
-			if ($this->do_debug >= 1) {
-				$this->displayErrors();
-			}
-
-			return false;
-		} else {
-			return true;
-		}
-
-	}
-
-	/**
-	 * If debug is enabled, display the error message array
-	 * @access private
-	 */
-	private function displayErrors() {
-		echo '<pre>';
-
-		foreach ($this->error as $single_error) {
-			print_r($single_error);
-		}
-
-		echo '</pre>';
+		fclose($this->pop_conn);
 	}
 
 	/**

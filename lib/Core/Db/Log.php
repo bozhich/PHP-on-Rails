@@ -1,27 +1,32 @@
 <?php
 
+/**
+ * Class Core_Db_Log
+ */
 class Core_Db_Log {
+	/**
+	 * @var
+	 */
 	protected static $session_id;
 
+	/**
+	 * @var
+	 */
 	protected static $instance;
 
 
+	/**
+	 * @return mixed
+	 */
 	public static function getStartTime() {
 		return microtime();
 	}
 
-
-	protected static function getDb() {
-		if (!isset(self::$instance)) {
-			self::$instance = new PDO('mysql:host=' . cfg()->db_log['host'] . ';dbname=' . cfg()->db_log['name'], cfg()->db_log['user'], cfg()->db_log['pass']);
-			self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
-			self::$instance->query('SET NAMES utf8');
-		}
-
-		return self::$instance;
-	}
-
-
+	/**
+	 * @param $query
+	 * @param $parameters
+	 * @param $start_time
+	 */
 	public static function log($query, $parameters, $start_time) {
 		if (!isset(self::$session_id)) {
 			$session_id = md5(microtime());
@@ -36,9 +41,6 @@ class Core_Db_Log {
 				$query_log = str_replace(':' . $param, $value, $query_log);
 			}
 		}
-
-		Core_Debug::getInstance()->getBar()->addCollector(new DebugBar\DataCollector\MessagesCollector('PDO'));
-		Core_Debug::getInstance()->getBar()['PDO']->info($query_log);
 
 		if (!cfg()->db_log) {
 			return;
@@ -59,5 +61,18 @@ class Core_Db_Log {
 			'session_id'       => $session_id,
 			'url'              => !empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null,
 		));
+	}
+
+	/**
+	 * @return PDO
+	 */
+	protected static function getDb() {
+		if (!isset(self::$instance)) {
+			self::$instance = new PDO('mysql:host=' . cfg()->db_log['host'] . ';dbname=' . cfg()->db_log['name'], cfg()->db_log['user'], cfg()->db_log['pass']);
+			self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+			self::$instance->query('SET NAMES utf8');
+		}
+
+		return self::$instance;
 	}
 }

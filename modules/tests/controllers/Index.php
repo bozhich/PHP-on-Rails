@@ -1,7 +1,13 @@
 <?php
 
 
+/**
+ * Class Tests_IndexController
+ */
 class Tests_IndexController extends Tests_BootstrapHelper {
+	/**
+	 *
+	 */
 	public function indexAction() {
 
 		$argv = $this->getRequest()->getServer('argv');

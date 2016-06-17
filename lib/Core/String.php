@@ -4,6 +4,9 @@
  * Class Core_String
  */
 class Core_String {
+	/**
+	 * @var array
+	 */
 	private static $bg_to_en_letters = array(
 		'А'                 => 'a',
 		'Б'                 => 'b',
@@ -73,6 +76,16 @@ class Core_String {
 	 * @param $word
 	 * @return string
 	 */
+	public static function toFunction($word) {
+		$word = self::toClass($word);
+
+		return strtolower(substr($word, 0, 1)) . substr($word, 1);
+	}
+
+	/**
+	 * @param $word
+	 * @return string
+	 */
 	public static function toClass($word) {
 		//return str_replace(' ', '', ucwords(preg_replace('/[^A-Z^a-z^0-9]+/', ' ', $word)));
 
@@ -83,18 +96,6 @@ class Core_String {
 
 		return $class_name;
 	}
-
-
-	/**
-	 * @param $word
-	 * @return string
-	 */
-	public static function toFunction($word) {
-		$word = self::toClass($word);
-
-		return strtolower(substr($word, 0, 1)) . substr($word, 1);
-	}
-
 
 	/**
 	 * @param        $string
